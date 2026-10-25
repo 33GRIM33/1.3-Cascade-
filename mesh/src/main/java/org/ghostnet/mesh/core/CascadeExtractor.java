@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 /**
  * Offline rule-based emergency extractor for Android and pure Java environments.
- * Extracts intent, needs, hazards, casualties, and urgency from freeform emergency text.
+ * Extracts intent, needs, hazards, casualties, battery constraint, and urgency from freeform emergency text.
  * Mirrors local_sos.py logic and serves as the offline baseline / fallback.
  */
 public final class CascadeExtractor {
@@ -17,7 +17,7 @@ public final class CascadeExtractor {
     );
 
     private static final Pattern MEDICAL_PATTERN = Pattern.compile(
-            "\\b(bleeding|broken|fracture|unconscious|cpr|insulin|oxygen|asthma|heart|stroke|burns|wound|medic|ambulance|doctor|nurse|first[ -]?aid|medical)\\b",
+            "\\b(insulin|dialysis|bleeding|broken|fracture|unconscious|cpr|oxygen|asthma|heart|stroke|burns|wound|medic|ambulance|doctor|nurse|first[ -]?aid|medical)\\b",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -37,7 +37,7 @@ public final class CascadeExtractor {
     );
 
     private static final Pattern FLOOD_PATTERN = Pattern.compile(
-            "\\b(flood|rising water|water level|water rising|submerged|current|river overflow|storm surge)\\b",
+            "\\b(flood|rising water|water level|water rising|ground floor flooded|submerged|current|river overflow|storm surge)\\b",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -66,8 +66,13 @@ public final class CascadeExtractor {
             Pattern.CASE_INSENSITIVE
     );
 
+    private static final Pattern BATTERY_PCT_PATTERN = Pattern.compile(
+            "\\b(?:(\\d{1,3})%\\s*(?:battery)?|battery\\s*(?:is|at)?\\s*(\\d{1,3})%)\\b",
+            Pattern.CASE_INSENSITIVE
+    );
+
     private static final Pattern OFFER_PATTERN = Pattern.compile(
-            "\\b(i can help|we have|available|volunteering|can provide|willing to assist|spare|bringing)\\b",
+            "\\b(i can help|we have|available|volunteering|can provide|willing to assist|spare|bringing|has a boat|can do dialysis)\\b",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -85,6 +90,14 @@ public final class CascadeExtractor {
      * Extracts structured emergency record from raw input text.
      */
     public static CascadeEmergency extract(String text) {
+        return extract(text, "NORMAL_USER", null, null, null, false);
+    }
+
+    /**
+     * Extracts structured emergency record with sender role, battery, coordinates, and audio metadata.
+     */
+    public static CascadeEmergency extract(String text, String senderRole, Integer batteryPct,
+                                          Double lat, Double lon, boolean hasAudio) {
         if (text == null) text = "";
         String clean = text.trim();
 
@@ -96,6 +109,10 @@ public final class CascadeExtractor {
         if (SHELTER_PATTERN.matcher(clean).find()) needs.add("shelter");
         if (POWER_PATTERN.matcher(clean).find()) needs.add("power");
 
+        // Specific items
+        if (clean.toLowerCase(Locale.US).contains("insulin") && !needs.contains("insulin")) needs.add("insulin");
+        if (clean.toLowerCase(Locale.US).contains("boat") && !needs.contains("boat")) needs.add("boat");
+
         // 2. Tag hazards
         List<String> hazards = new ArrayList<>();
         if (FLOOD_PATTERN.matcher(clean).find()) hazards.add("flood");
@@ -106,16 +123,37 @@ public final class CascadeExtractor {
         // 3. Extract people count
         Integer count = extractPeopleCount(clean);
 
-        // 4. Classify intent
+        // 4. Extract battery % if mentioned in text and not provided externally
+        Integer extractedBattery = batteryPct != null ? batteryPct : extractBatteryPct(clean);
+
+        // 5. Classify intent
         String intent = classifyIntent(clean, needs, hazards);
 
-        // 5. Urgency
-        String urgency = calculateUrgency(intent, needs, hazards, count);
+        // 6. Urgency calculation
+        String urgency = calculateUrgency(intent, needs, hazards, count, extractedBattery);
 
-        // 6. Confidence estimate
+        // 7. Confidence estimate
         double confidence = (needs.isEmpty() && hazards.isEmpty()) ? 0.70 : 0.94;
 
-        return CascadeEmergency.create(intent, confidence, urgency, needs, hazards, count, null, clean);
+        return CascadeEmergency.createWithRole(
+                intent, confidence, urgency, needs, hazards, count, null, clean,
+                senderRole != null ? senderRole : "NORMAL_USER",
+                extractedBattery, lat, lon, hasAudio
+        );
+    }
+
+    private static Integer extractBatteryPct(String text) {
+        Matcher m = BATTERY_PCT_PATTERN.matcher(text);
+        if (m.find()) {
+            String g1 = m.group(1);
+            String g2 = m.group(2);
+            String num = g1 != null ? g1 : g2;
+            try {
+                int val = Integer.parseInt(num);
+                if (val >= 0 && val <= 100) return val;
+            } catch (NumberFormatException ignored) {}
+        }
+        return null;
     }
 
     private static Integer extractPeopleCount(String text) {
@@ -148,9 +186,16 @@ public final class CascadeExtractor {
         return "STATUS_QUERY";
     }
 
-    private static String calculateUrgency(String intent, List<String> needs, List<String> hazards, Integer count) {
+    private static String calculateUrgency(String intent, List<String> needs, List<String> hazards,
+                                          Integer count, Integer batteryPct) {
         if (intent.equals("CHIT_CHAT")) return "low";
         if (intent.equals("RESOURCE_OFFER")) return "low";
+
+        // Battery critical: <= 15% escalates urgency
+        if (batteryPct != null && batteryPct <= 15 && (!needs.isEmpty() || !hazards.isEmpty())) {
+            return "critical";
+        }
+
         if (needs.contains("rescue") || needs.contains("medical") || hazards.contains("fire") || hazards.contains("flood")) {
             if (count != null && count >= 3) return "critical";
             return "high";

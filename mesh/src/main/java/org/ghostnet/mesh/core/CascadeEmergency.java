@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
  * Standard structured emergency record for the CASCADE network.
  * Compatible with cascade.emergency.v1 schema produced by the local AI pipeline.
  * Bounded to fit within MessageCodec.MAX_BYTES (2048 bytes).
+ *
+ * Supports participant roles (Normal User vs First Responder), battery level awareness,
+ * multi-stop warehouse dispatch routing, and audio attachments.
  */
 public final class CascadeEmergency {
     public static final String VERSION = "cascade.emergency.v1";
@@ -25,9 +28,27 @@ public final class CascadeEmergency {
     public final String location;
     public final String rawText;
 
+    // Advanced emergency network metadata
+    public final String senderRole; // "NORMAL_USER" or "FIRST_RESPONDER"
+    public final Integer batteryPct; // e.g. 12 (%)
+    public final Double senderLat;
+    public final Double senderLon;
+    public final String warehouseRouting; // Nearest warehouse dispatch route
+    public final String dispatchStatus; // "PENDING", "DISPATCHED", "RESOLVED"
+    public final boolean hasAudioAttachment;
+
     public CascadeEmergency(String version, String intent, double confidence, String urgency,
                             List<String> needs, List<String> hazards,
                             Integer peopleCount, String location, String rawText) {
+        this(version, intent, confidence, urgency, needs, hazards, peopleCount, location, rawText,
+                "NORMAL_USER", null, null, null, null, "PENDING", false);
+    }
+
+    public CascadeEmergency(String version, String intent, double confidence, String urgency,
+                            List<String> needs, List<String> hazards,
+                            Integer peopleCount, String location, String rawText,
+                            String senderRole, Integer batteryPct, Double senderLat, Double senderLon,
+                            String warehouseRouting, String dispatchStatus, boolean hasAudioAttachment) {
         this.version = version == null ? VERSION : version;
         this.intent = intent == null ? "UNKNOWN" : intent;
         this.confidence = Math.max(0.0, Math.min(1.0, confidence));
@@ -37,12 +58,33 @@ public final class CascadeEmergency {
         this.peopleCount = peopleCount;
         this.location = location;
         this.rawText = rawText == null ? "" : rawText;
+        this.senderRole = senderRole == null ? "NORMAL_USER" : senderRole;
+        this.batteryPct = batteryPct;
+        this.senderLat = senderLat;
+        this.senderLon = senderLon;
+        this.warehouseRouting = warehouseRouting;
+        this.dispatchStatus = dispatchStatus == null ? "PENDING" : dispatchStatus;
+        this.hasAudioAttachment = hasAudioAttachment;
     }
 
     public static CascadeEmergency create(String intent, double confidence, String urgency,
                                          List<String> needs, List<String> hazards,
                                          Integer peopleCount, String location, String rawText) {
         return new CascadeEmergency(VERSION, intent, confidence, urgency, needs, hazards, peopleCount, location, rawText);
+    }
+
+    public static CascadeEmergency createWithRole(String intent, double confidence, String urgency,
+                                                 List<String> needs, List<String> hazards,
+                                                 Integer peopleCount, String location, String rawText,
+                                                 String senderRole, Integer batteryPct,
+                                                 Double senderLat, Double senderLon, boolean hasAudio) {
+        return new CascadeEmergency(VERSION, intent, confidence, urgency, needs, hazards, peopleCount, location, rawText,
+                senderRole, batteryPct, senderLat, senderLon, null, "PENDING", hasAudio);
+    }
+
+    public CascadeEmergency withRouting(String routing, String status) {
+        return new CascadeEmergency(version, intent, confidence, urgency, needs, hazards, peopleCount, location, rawText,
+                senderRole, batteryPct, senderLat, senderLon, routing, status != null ? status : dispatchStatus, hasAudioAttachment);
     }
 
     /**
@@ -93,6 +135,20 @@ public final class CascadeEmergency {
             sb.append("\"location\":null,");
         }
 
+        // sender_role & battery
+        sb.append("\"sender_role\":").append(quote(senderRole)).append(",");
+        if (batteryPct != null) {
+            sb.append("\"battery_pct\":").append(batteryPct).append(",");
+        }
+        if (senderLat != null && senderLon != null) {
+            sb.append(String.format(java.util.Locale.US, "\"lat\":%.6f,\"lon\":%.6f,", senderLat, senderLon));
+        }
+        if (warehouseRouting != null) {
+            sb.append("\"routing\":").append(quote(warehouseRouting)).append(",");
+        }
+        sb.append("\"dispatch_status\":").append(quote(dispatchStatus)).append(",");
+        sb.append("\"has_audio\":").append(hasAudioAttachment).append(",");
+
         // raw_text
         sb.append("\"raw_text\":").append(quote(rawText));
         sb.append("}");
@@ -129,6 +185,14 @@ public final class CascadeEmergency {
         List<String> needs = extractStringList(json, "needs");
         List<String> hazards = extractStringList(json, "hazards");
 
+        String senderRole = extractString(json, "sender_role");
+        Integer batteryPct = extractInteger(json, "battery_pct");
+        Double lat = extractDouble(json, "lat");
+        Double lon = extractDouble(json, "lon");
+        String routing = extractString(json, "routing");
+        String dispatchStatus = extractString(json, "dispatch_status");
+        boolean hasAudio = json.contains("\"has_audio\":true");
+
         return new CascadeEmergency(
                 version != null ? version : VERSION,
                 intent != null ? intent : "EMERGENCY_REPORT",
@@ -138,7 +202,14 @@ public final class CascadeEmergency {
                 hazards,
                 count,
                 location,
-                rawText != null ? rawText : ""
+                rawText != null ? rawText : "",
+                senderRole != null ? senderRole : "NORMAL_USER",
+                batteryPct,
+                lat,
+                lon,
+                routing,
+                dispatchStatus != null ? dispatchStatus : "PENDING",
+                hasAudio
         );
     }
 
@@ -169,7 +240,7 @@ public final class CascadeEmergency {
     }
 
     private static Double extractDouble(String json, String key) {
-        Pattern p = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*([0-9]+(?:\\.[0-9]+)?)");
+        Pattern p = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*(-?[0-9]+(?:\\.[0-9]+)?)");
         Matcher m = p.matcher(json);
         if (m.find()) {
             try { return Double.parseDouble(m.group(1)); } catch (NumberFormatException ignored) {}

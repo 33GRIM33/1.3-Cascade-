@@ -46,10 +46,10 @@ CASCADE combines offline peer-to-peer mesh communications, lightweight on-device
                        └─────────────────────────────────────────────────────────┘
 ```
 
-The system is split into two tightly integrated components:
+The system combines three tightly integrated subsystems:
 
 1. **Android Mesh Transport (`:mesh` and `:app`)**:
-   - `:mesh` is a pure Java core library (`MeshRouter`, `MessageCodec`, `MessageStore`) with an Android adapter (`NearbyConnectionsTransport`) running Google Nearby Connections over Wi-Fi Direct and BLE.
+   - `:mesh` is a pure Java core library (`MeshRouter`, `MessageCodec`, `MessageStore`) with an Android adapter (`NearbyConnectionsTransport`) running Google Nearby Connections over Wi-Fi Direct and BLE without cellular/internet.
    - Versioned, bounded binary framing (`GNET`, version 1, max 2048 bytes).
    - Store-and-forward relaying with duplicate suppression, TTL expiry, and reverse-path ACKs.
    - `:app` is a device test harness with live connection codes, direct peer tracking, and emergency packet inspector.
@@ -57,7 +57,16 @@ The system is split into two tightly integrated components:
 2. **On-Device AI Engine (`Models/` & `app/src/main/assets/cascade/`)**:
    - An ultra-compact **17.07 MB INT8 MiniLM** model paired with trained linear heads and domain polarity gates.
    - Runs 100% locally on smartphone CPUs using ONNX Runtime Mobile or the built-in offline Java fallback extractor.
-   - Converts informal, messy crisis messages into validated structured emergency records (`cascade.emergency.v1`) with zero cloud latency and zero hallucination risk.
+   - Converts informal, messy crisis messages (e.g. *"Need insulin for dad, ground floor flooded, 12% battery"*) into validated structured emergency records (`cascade.emergency.v1`) with zero cloud latency and zero hallucination risk.
+
+3. **Multi-Agent Dispatch & Logistics Engine (`DispatchEngine`, `WarehouseManager`)**:
+   - **Role Differentiation**: Distinguishes between **Normal Users** (citizens needing rescue) and **First Responders** (medics, boat operators, firefighters).
+   - **Hands-Free Audio Support**: Real-time voice SOS dictation (`🎙️ Voice`) feeding directly into local AI, and audible emergency acoustic siren tones on responder devices.
+   - **Marked Supply Warehouses**: Offline directory of disaster supply depots (Warehouse Alpha, Beta, Gamma) tracking stock for insulin, inflatable boats, generators, and rations.
+   - **Multi-Depot Supply Routing**: If the nearest warehouse is missing items, automatically routes responders via the next nearest depot.
+   - **Probabilistic Evaluation Chain**:
+     $$\text{Claim Verification} \longrightarrow \text{Hazard Avoidance} \longrightarrow \text{Trust Scoring} \longrightarrow \text{Battery/Routing Cost} \longrightarrow \text{Safe Dispatch}$$
+     Generates one-line plain language justifications for human responders.
 
 ---
 

@@ -15,12 +15,19 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.*;
+import android.content.IntentFilter;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+import android.os.BatteryManager;
+import android.speech.RecognizerIntent;
 import org.ghostnet.mesh.core.MeshEvent;
 import org.ghostnet.mesh.core.MeshModule;
 import org.ghostnet.mesh.core.MessageCodec;
 import org.ghostnet.mesh.core.NearbyPermissionPolicy;
 import org.ghostnet.mesh.core.CascadeEmergency;
 import org.ghostnet.mesh.core.CascadeExtractor;
+import org.ghostnet.mesh.core.DispatchEngine;
+import org.ghostnet.mesh.core.WarehouseManager;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -38,10 +45,13 @@ public final class DebugActivity extends Activity {
     private EditText recipient, blocked, message;
     private Button start, publish;
     private String nodeId;
+    private String currentRole = "NORMAL_USER";
+    private final DispatchEngine dispatchEngine = new DispatchEngine();
     private final Handler main = new Handler(Looper.getMainLooper());
     private final List<AlertDialog> confirmations = new ArrayList<>();
     private final LinkedHashMap<String, PacketView> packets = new LinkedHashMap<>();
     private final SimpleDateFormat clock = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
 
     private static final class PacketView {
         String id, direction, text, origin, via, recipient, status;
@@ -83,6 +93,28 @@ public final class DebugActivity extends Activity {
         TextView help = new TextView(this);
         help.setText("Enable Bluetooth, Wi-Fi and Location. Tap Start, allow Nearby devices and precise Location while using the app. Internet is not needed.");
         column.addView(help);
+
+        currentRole = getPreferences(MODE_PRIVATE).getString("role", "NORMAL_USER");
+        TextView roleTitle = new TextView(this);
+        roleTitle.setText("Participant Role:");
+        column.addView(roleTitle);
+        RadioGroup roleGroup = new RadioGroup(this);
+        roleGroup.setOrientation(LinearLayout.HORIZONTAL);
+        RadioButton rbCitizen = new RadioButton(this);
+        rbCitizen.setText("Citizen (Victim) ");
+        RadioButton rbResponder = new RadioButton(this);
+        rbResponder.setText("First Responder");
+        if ("FIRST_RESPONDER".equals(currentRole)) rbResponder.setChecked(true);
+        else rbCitizen.setChecked(true);
+        roleGroup.addView(rbCitizen);
+        roleGroup.addView(rbResponder);
+        roleGroup.setOnCheckedChangeListener((group, id) -> {
+            currentRole = id == rbResponder.getId() ? "FIRST_RESPONDER" : "NORMAL_USER";
+            getPreferences(MODE_PRIVATE).edit().putString("role", currentRole).apply();
+            Toast.makeText(this, "Active Mode: " + (currentRole.equals("FIRST_RESPONDER") ? "First Responder" : "Citizen / Victim"), Toast.LENGTH_SHORT).show();
+        });
+        column.addView(roleGroup);
+
         blocked = input("Optional: blocked direct peer ID (A↔C test)");
         blocked.setText(getPreferences(MODE_PRIVATE).getString("blocked", "")); column.addView(blocked);
         start = button("Start"); column.addView(start);
@@ -90,7 +122,16 @@ public final class DebugActivity extends Activity {
         peerText = new TextView(this); peerText.setText("Direct peers: []"); column.addView(peerText);
         recipient = input("Recipient node ID, or * for broadcast");
         recipient.setText(getPreferences(MODE_PRIVATE).getString("recipient", "")); column.addView(recipient);
-        message = input("Distress text for demo"); column.addView(message);
+
+        LinearLayout msgRow = new LinearLayout(this);
+        msgRow.setOrientation(LinearLayout.HORIZONTAL);
+        message = input("Distress text / needed supplies");
+        msgRow.addView(message, new LinearLayout.LayoutParams(0, -2, 1));
+        Button voiceBtn = button("🎙️ Voice");
+        voiceBtn.setOnClickListener(v -> startVoiceRecognition());
+        msgRow.addView(voiceBtn);
+        column.addView(msgRow);
+
         publish = button("Publish DISTRESS"); publish.setEnabled(false); column.addView(publish);
 
         TextView packetTitle = new TextView(this);
@@ -122,21 +163,24 @@ public final class DebugActivity extends Activity {
         String body = message.getText().toString().trim();
         if (body.isEmpty()) { message.setError("Enter an emergency description (1–1400 UTF-8 bytes)"); return; }
         
-        // Offline CASCADE AI extraction
-        CascadeEmergency emergency = CascadeExtractor.extract(body);
+        // Offline CASCADE AI extraction with role & battery constraint
+        int battery = getBatteryPercentage();
+        CascadeEmergency emergency = CascadeExtractor.extract(body, currentRole, battery, 37.7750, -122.4183, false);
         byte[] bytes = emergency.toJsonBytes();
         if (bytes.length > 1800) { message.setError("Message payload exceeds wire limit"); return; }
         getPreferences(MODE_PRIVATE).edit().putString("recipient", to).apply();
         String id = module.publish(to, MeshEvent.Type.DISTRESS, bytes, 300000, 4, 10);
         PacketView packet = new PacketView();
         packet.id = id; packet.direction = "SENT";
-        packet.text = formatEmergencySummary(emergency);
+        DispatchEngine.EvaluationResult localEval = dispatchEngine.evaluate(emergency, nodeId, 4, 37.7749, -122.4194);
+        packet.text = formatEmergencySummary(emergency, localEval);
         packet.origin = nodeId; packet.via = nodeId; packet.recipient = to;
         packet.hops = 4; packet.status = "QUEUED"; packet.timeMs = System.currentTimeMillis();
         packets.put(id, packet); trimPackets(); renderPackets();
         append("Submitted id=" + id + " to=" + to + " (" + emergency.intent + "/" + emergency.urgency + ")");
         message.setText("");
     }
+
     private boolean granted(String permission) { return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED; }
     private void ensurePermissionsThenStart() {
         String block = blocked.getText().toString().trim();
@@ -246,7 +290,13 @@ public final class DebugActivity extends Activity {
             packet.direction = "RECEIVED";
             CascadeEmergency emergency = CascadeEmergency.fromJsonBytes(event.payload);
             if (emergency != null) {
-                packet.text = formatEmergencySummary(emergency);
+                DispatchEngine.EvaluationResult eval = dispatchEngine.evaluate(
+                        emergency, event.originId, event.hopLimit, 37.7749, -122.4194
+                );
+                packet.text = formatEmergencySummary(emergency, eval);
+                if ("FIRST_RESPONDER".equals(currentRole) && event.type == MeshEvent.Type.DISTRESS) {
+                    triggerEmergencyAudioAlarm();
+                }
             } else {
                 packet.text = new String(event.payload, StandardCharsets.UTF_8);
             }
@@ -263,15 +313,80 @@ public final class DebugActivity extends Activity {
         trimPackets(); renderPackets();
     }
 
-    private String formatEmergencySummary(CascadeEmergency e) {
+    private String formatEmergencySummary(CascadeEmergency e, DispatchEngine.EvaluationResult eval) {
         StringBuilder sb = new StringBuilder();
-        sb.append("[").append(e.intent).append(" • ").append(e.urgency.toUpperCase(Locale.US)).append("]");
+        String roleBadge = "FIRST_RESPONDER".equalsIgnoreCase(e.senderRole) ? "🚑 RESPONDER" : "👤 CITIZEN";
+        sb.append("[").append(roleBadge);
+        if (e.batteryPct != null) sb.append(" • 🔋").append(e.batteryPct).append("%");
+        sb.append("] [").append(e.intent).append(" • ").append(e.urgency.toUpperCase(Locale.US)).append("]");
         if (e.peopleCount != null) sb.append(" [").append(e.peopleCount).append(" people]");
         if (!e.needs.isEmpty()) sb.append("\nNeeds: ").append(String.join(", ", e.needs));
         if (!e.hazards.isEmpty()) sb.append("\nHazards: ").append(String.join(", ", e.hazards));
         sb.append("\n\"").append(e.rawText).append("\"");
+
+        if (eval != null) {
+            sb.append("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+            sb.append("⚡ PROBABILISTIC DISPATCH:\n");
+            sb.append("• Trust: ").append(Math.round(eval.trustScore * 100)).append("% | Decision: ")
+                    .append(eval.approvedForDispatch ? "APPROVED" : "HELD").append("\n");
+            sb.append("• Plan: ").append(eval.justification);
+            if (eval.routePlan != null && eval.routePlan.stops.size() > 2) {
+                sb.append("\n• Nearest Supply Depots:\n");
+                for (int i = 1; i < eval.routePlan.stops.size() - 1; i++) {
+                    WarehouseManager.RoutePlan.RouteStop s = eval.routePlan.stops.get(i);
+                    sb.append("  ").append(i).append(". ").append(s.label);
+                    if (!s.collectItems.isEmpty()) sb.append(" -> Collect: ").append(String.join(", ", s.collectItems));
+                    sb.append("\n");
+                }
+            }
+        }
         return sb.toString();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 42 && resultCode == RESULT_OK && data != null) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (matches != null && !matches.isEmpty()) {
+                String spoken = matches.get(0);
+                message.setText(spoken);
+                Toast.makeText(this, "Voice recognized: " + spoken, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void startVoiceRecognition() {
+        try {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Describe emergency needs Hands-Free");
+            startActivityForResult(intent, 42);
+        } catch (Exception e) {
+            Toast.makeText(this, "Voice recognition not available on this device", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void triggerEmergencyAudioAlarm() {
+        try {
+            ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+            tg.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK, 1200);
+        } catch (Throwable ignored) {}
+    }
+
+    private int getBatteryPercentage() {
+        try {
+            IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            Intent batteryStatus = registerReceiver(null, ifilter);
+            if (batteryStatus != null) {
+                int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                if (level >= 0 && scale > 0) return (int) ((level / (float) scale) * 100);
+            }
+        } catch (Throwable ignored) {}
+        return 85;
+    }
+
 
     private void recordStatus(String id, String delivery) {
         PacketView packet = packets.get(id);

@@ -203,7 +203,49 @@ public final class RouterChecks {
         CascadeEmergency wireEmergency = CascadeEmergency.fromJsonBytes(decodedEvent.payload);
         check(wireEmergency != null && wireEmergency.needs.contains("rescue"), "wire emergency extracted on destination");
 
-        System.out.println("RouterChecks passed (including CASCADE offline AI extraction & wire frame validation)");
+        // CASCADE AI: Roles, Battery Awareness & Probabilistic Multi-Agent Dispatch with Warehouse Routing
+        // Case 1: Problem statement input: "Need insulin for dad, ground floor flooded" with 12% battery from Normal User
+        String problemStatementMsg = "Need insulin for dad, ground floor flooded 12% battery";
+        CascadeEmergency victimSos = CascadeExtractor.extract(problemStatementMsg, "NORMAL_USER", 12, 37.7780, -122.4150, false);
+        check("NORMAL_USER".equals(victimSos.senderRole), "role is NORMAL_USER");
+        check(Integer.valueOf(12).equals(victimSos.batteryPct), "extracted 12% battery constraint");
+        check(victimSos.needs.contains("medical"), "medical need identified");
+        check(victimSos.hazards.contains("flood"), "flood hazard identified");
+        check("critical".equals(victimSos.urgency), "critical urgency due to dying 12% battery in flood");
+
+        // Test WarehouseManager inventory search
+        WarehouseManager wm = new WarehouseManager();
+        List<WarehouseManager.WarehouseMatch> insulinWarehouses = wm.findWarehousesWithStock("insulin", 37.7749, -122.4194);
+        check(!insulinWarehouses.isEmpty(), "found warehouse with insulin");
+        check("WH-ALPHA".equals(insulinWarehouses.get(0).warehouse.id), "WH-ALPHA is closest for insulin");
+
+        // Test multi-depot routing for insulin (medical) + boat (flood rescue)
+        WarehouseManager.RoutePlan routePlan = wm.planRoute(Arrays.asList("insulin", "boat"), 37.7700, -122.4200, 37.7780, -122.4150);
+        check(routePlan.stops.size() >= 3, "route plan includes stops at warehouses");
+        check(routePlan.fulfilledItems.contains("insulin") && routePlan.fulfilledItems.contains("boat"), "both insulin and boat fulfilled");
+        check(routePlan.summaryText.contains("Route via"), "summary generated for responder");
+
+        // Test DispatchEngine 5-step Probabilistic Evaluation Chain
+        DispatchEngine engine = new DispatchEngine(wm);
+        DispatchEngine.EvaluationResult eval = engine.evaluate(victimSos, a.id, 4, 37.7700, -122.4200);
+        check(eval.claimVerified, "claim verified");
+        check(eval.trustScore >= 0.70, "trust score above threshold");
+        check(eval.urgencyCost > 7.0, "urgency cost elevated by 12% battery constraint");
+        check(eval.approvedForDispatch, "approved for dispatch");
+        check(eval.justification.contains("CRITICAL rescue") || eval.justification.contains("Dispatched:"), "human-in-the-loop justification generated");
+        check(eval.requiredEquipment.contains("boat") && eval.requiredEquipment.contains("insulin"), "required equipment identified");
+
+        // Wire transmission of full role + battery + routing payload
+        CascadeEmergency dispatchedSos = victimSos.withRouting(eval.justification, "DISPATCHED");
+        byte[] fullPayload = dispatchedSos.toJsonBytes();
+        check(fullPayload.length < 800, "full dispatch envelope fits well under 2048 bytes");
+        CascadeEmergency roundTrip = CascadeEmergency.fromJsonBytes(fullPayload);
+        check(roundTrip != null && Integer.valueOf(12).equals(roundTrip.batteryPct), "battery % preserved across wire");
+        check("DISPATCHED".equals(roundTrip.dispatchStatus), "dispatch status preserved across wire");
+        check(roundTrip.warehouseRouting != null, "warehouse routing preserved across wire");
+
+        System.out.println("RouterChecks passed (including CASCADE offline AI extraction, roles, warehouses & probabilistic dispatch)");
     }
 }
+
 
