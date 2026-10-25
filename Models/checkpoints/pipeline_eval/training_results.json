@@ -1,0 +1,1 @@
+{"intent_head":{"train_examples":2400,"val_accuracy":0.99,"gold_accuracy":1.0,"gold_total":114,"gold_correct":114,"regularization":5.0},"label_head":{"examples":66,"tp":45,"fp":11,"fn":13,"exact":45},"errors":[]}

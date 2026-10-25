@@ -1,0 +1,25 @@
+{
+  "files": {
+    "encoder.onnx": {
+      "size_kb": 17070.8,
+      "sha256": "44a2d6852c28e7a4cff4d77a8bc8d5ca2a8b38884c1fa746e6652d830109e0c2"
+    },
+    "tokenizer.json": {
+      "size_kb": 455.32,
+      "sha256": "a9576e4dadfe7f78f071a1c00ba6902cc83ec6ed7e9b590ee974950bd4d54393"
+    },
+    "config.json": {
+      "size_kb": 0.61,
+      "sha256": "fc00f0ca1c3380f17937a4050908dd2cf743c36bebe437cf448b8aa4e7ddfe4d"
+    },
+    "head.json": {
+      "size_kb": 82.88,
+      "sha256": "0492f6d792bcd311af68bdc6ece2f008068a592ab3f0b1fcdcda2ab4c20ef51d"
+    },
+    "intent_head.json": {
+      "size_kb": 26.76,
+      "sha256": "3364a7dc14d3614b262b72197064a5beab2b1b37b2bd6173b85ea4950772b79d"
+    }
+  },
+  "version": "cascade.model-bundle.v1"
+}

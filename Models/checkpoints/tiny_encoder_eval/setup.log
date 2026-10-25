@@ -1,0 +1,320 @@
+
+Stage 1/4: /mnt/c/Development/Cascade/Models/.venv-tiny-encoder/bin/python -m pip install -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt
+Collecting numpy<3,>=1.26 (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 1))
+  Using cached numpy-2.5.4-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting onnxruntime<2,>=1.20 (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2))
+  Downloading onnxruntime-1.31.0-cp314-cp314-manylinux_2_28_x86_64.whl.metadata (5.7 kB)
+Collecting tokenizers<1,>=0.20 (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Downloading tokenizers-0.23.3-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.8 kB)
+Collecting flatbuffers (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2))
+  Downloading flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)
+Collecting packaging (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2))
+  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting protobuf>=4.25.8 (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2))
+  Using cached protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)
+Collecting huggingface-hub<3.0,>=0.16.4 (from tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached huggingface_hub-2.3.0-py3-none-any.whl.metadata (16 kB)
+Collecting click<9.0.0,>=8.4.2 (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting filelock>=3.10.0 (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached filelock-4.2.4-py3-none-any.whl.metadata (2.0 kB)
+Collecting fsspec>=2023.5.0 (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+Collecting hf-xet<2.0.0,>=1.6.0 (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached hf_xet-1.7.0-cp38-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (4.9 kB)
+Collecting httpx2<3,>=2.0.0 (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached httpx2-2.16.0-py3-none-any.whl.metadata (10 kB)
+Collecting pyyaml>=5.1 (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting tqdm>=4.42.1 (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached tqdm-4.70.1-py3-none-any.whl.metadata (57 kB)
+Collecting typing-extensions>=4.1.0 (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting anyio>=4.10 (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+Collecting httpcore2==2.16.0 (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached httpcore2-2.16.0-py3-none-any.whl.metadata (27 kB)
+Collecting idna>=3.18 (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting truststore>=0.10 (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached truststore-0.10.5-py3-none-any.whl.metadata (4.5 kB)
+Collecting h11>=0.16 (from httpcore2==2.16.0->httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3))
+  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Using cached numpy-2.5.4-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+Downloading onnxruntime-1.31.0-cp314-cp314-manylinux_2_28_x86_64.whl (23.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.8/23.8 MB 1.9 MB/s eta 0:00:00
+Downloading tokenizers-0.23.3-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.4/3.4 MB 2.3 MB/s eta 0:00:00
+Using cached huggingface_hub-2.3.0-py3-none-any.whl (855 kB)
+Using cached click-8.5.0-py3-none-any.whl (125 kB)
+Using cached hf_xet-1.7.0-cp38-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.2 MB)
+Using cached httpx2-2.16.0-py3-none-any.whl (97 kB)
+Using cached httpcore2-2.16.0-py3-none-any.whl (85 kB)
+Using cached anyio-4.15.1-py3-none-any.whl (132 kB)
+Using cached filelock-4.2.4-py3-none-any.whl (162 kB)
+Using cached fsspec-2026.9.0-py3-none-any.whl (221 kB)
+Using cached h11-0.16.0-py3-none-any.whl (37 kB)
+Using cached idna-3.20-py3-none-any.whl (69 kB)
+Using cached packaging-26.3-py3-none-any.whl (129 kB)
+Using cached protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl (343 kB)
+Using cached pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (794 kB)
+Using cached tqdm-4.70.1-py3-none-any.whl (80 kB)
+Using cached truststore-0.10.5-py3-none-any.whl (19 kB)
+Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)
+Installing collected packages: flatbuffers, typing-extensions, truststore, tqdm, pyyaml, protobuf, packaging, numpy, idna, hf-xet, h11, fsspec, filelock, click, onnxruntime, httpcore2, anyio, httpx2, huggingface-hub, tokenizers
+
+Successfully installed anyio-4.15.1 click-8.5.0 filelock-4.2.4 flatbuffers-25.12.19 fsspec-2026.9.0 h11-0.16.0 hf-xet-1.7.0 httpcore2-2.16.0 httpx2-2.16.0 huggingface-hub-2.3.0 idna-3.20 numpy-2.5.4 onnxruntime-1.31.0 packaging-26.3 protobuf-7.36.2 pyyaml-6.0.3 tokenizers-0.23.3 tqdm-4.70.1 truststore-0.10.5 typing-extensions-4.16.0
+
+Stage 1/4: /mnt/c/Development/Cascade/Models/.venv-tiny-encoder/bin/python -m pip install -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt
+Requirement already satisfied: numpy<3,>=1.26 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 1)) (2.5.4)
+Requirement already satisfied: onnxruntime<2,>=1.20 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2)) (1.31.0)
+Requirement already satisfied: tokenizers<1,>=0.20 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (0.23.3)
+Requirement already satisfied: flatbuffers in ./.venv-tiny-encoder/lib/python3.14/site-packages (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2)) (25.12.19)
+Requirement already satisfied: packaging in ./.venv-tiny-encoder/lib/python3.14/site-packages (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2)) (26.3)
+Requirement already satisfied: protobuf>=4.25.8 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2)) (7.36.2)
+Requirement already satisfied: huggingface-hub<3.0,>=0.16.4 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (2.3.0)
+Requirement already satisfied: click<9.0.0,>=8.4.2 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (8.5.0)
+Requirement already satisfied: filelock>=3.10.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (4.2.4)
+Requirement already satisfied: fsspec>=2023.5.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (2026.9.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.6.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (1.7.0)
+Requirement already satisfied: httpx2<3,>=2.0.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (2.16.0)
+Requirement already satisfied: pyyaml>=5.1 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (6.0.3)
+Requirement already satisfied: tqdm>=4.42.1 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (4.70.1)
+Requirement already satisfied: typing-extensions>=4.1.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (4.16.0)
+Requirement already satisfied: anyio>=4.10 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (4.15.1)
+Requirement already satisfied: httpcore2==2.16.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (2.16.0)
+Requirement already satisfied: idna>=3.18 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (3.20)
+Requirement already satisfied: truststore>=0.10 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (0.10.5)
+Requirement already satisfied: h11>=0.16 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpcore2==2.16.0->httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (0.16.0)
+
+Stage 2/4: /mnt/c/Development/Cascade/Models/.venv-tiny-encoder/bin/python -m unittest -v test_local_sos.py test_tiny_encoder.py
+test_adds_two_explicit_groups_without_counting_road_numbers (test_local_sos.LocalSosTests.test_adds_two_explicit_groups_without_counting_road_numbers) ... ok
+test_drinking_water_is_a_need_without_a_flood (test_local_sos.LocalSosTests.test_drinking_water_is_a_need_without_a_flood) ... ok
+test_location_form_has_explicit_provenance (test_local_sos.LocalSosTests.test_location_form_has_explicit_provenance) ... ok
+test_mentioned_but_not_requested_boat_is_not_a_requested_item (test_local_sos.LocalSosTests.test_mentioned_but_not_requested_boat_is_not_a_requested_item) ... ok
+test_missing_details_do_not_block_an_sos (test_local_sos.LocalSosTests.test_missing_details_do_not_block_an_sos) ... ok
+test_model_cannot_invent_location_or_resource (test_local_sos.LocalSosTests.test_model_cannot_invent_location_or_resource) ... ok
+test_negated_hazard_is_not_reported (test_local_sos.LocalSosTests.test_negated_hazard_is_not_reported) ... ok
+test_outbox_contains_same_compact_json_and_deduplicates (test_local_sos.LocalSosTests.test_outbox_contains_same_compact_json_and_deduplicates) ... ok
+test_rising_water_and_boat_are_rescue_not_drinking_water (test_local_sos.LocalSosTests.test_rising_water_and_boat_are_rescue_not_drinking_water) ... ok
+test_roadside_address_wins_over_wire_description (test_local_sos.LocalSosTests.test_roadside_address_wins_over_wire_description) ... ok
+test_route_number_is_not_a_people_count (test_local_sos.LocalSosTests.test_route_number_is_not_a_people_count) ... ok
+test_street_abbreviation_and_missing_water_are_preserved (test_local_sos.LocalSosTests.test_street_abbreviation_and_missing_water_are_preserved) ... ok
+test_but_separates_opposite_evidence (test_tiny_encoder.TinyEncoderTests.test_but_separates_opposite_evidence) ... FAIL
+test_clause_splitting_preserves_address_abbreviation_and_offsets (test_tiny_encoder.TinyEncoderTests.test_clause_splitting_preserves_address_abbreviation_and_offsets) ... ok
+test_encoder_mode_can_be_compared_without_rule_labels (test_tiny_encoder.TinyEncoderTests.test_encoder_mode_can_be_compared_without_rule_labels) ... ok
+test_enrichment_keeps_uncertainty_and_source_quote (test_tiny_encoder.TinyEncoderTests.test_enrichment_keeps_uncertainty_and_source_quote) ... ok
+test_hybrid_can_remove_rule_labels_explicitly_denied_by_the_message (test_tiny_encoder.TinyEncoderTests.test_hybrid_can_remove_rule_labels_explicitly_denied_by_the_message) ... ok
+test_hybrid_honors_clear_negative_request_and_resolved_hazard (test_tiny_encoder.TinyEncoderTests.test_hybrid_honors_clear_negative_request_and_resolved_hazard) ... ok
+test_json_writer_replaces_atomically_valid_json (test_tiny_encoder.TinyEncoderTests.test_json_writer_replaces_atomically_valid_json) ... ok
+
+======================================================================
+FAIL: test_but_separates_opposite_evidence (test_tiny_encoder.TinyEncoderTests.test_but_separates_opposite_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Development/Cascade/Models/test_tiny_encoder.py", line 15, in test_but_separates_opposite_evidence
+    self.assertEqual(parts("There is no fire, but water is rising."),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     ["There is no fire,", "water is rising."])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['There is no fire,', 'water is rising'] != ['There is no fire,', 'water is rising.']
+
+First differing element 1:
+'water is rising'
+'water is rising.'
+
+- ['There is no fire,', 'water is rising']
++ ['There is no fire,', 'water is rising.']
+?                                       +
+
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.010s
+
+FAILED (failures=1)
+
+Stage 1/5: /mnt/c/Development/Cascade/Models/.venv-tiny-encoder/bin/python -m pip install -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt
+Requirement already satisfied: numpy<3,>=1.26 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 1)) (2.5.4)
+Requirement already satisfied: onnxruntime<2,>=1.20 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2)) (1.31.0)
+Requirement already satisfied: tokenizers<1,>=0.20 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from -r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (0.23.3)
+Requirement already satisfied: flatbuffers in ./.venv-tiny-encoder/lib/python3.14/site-packages (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2)) (25.12.19)
+Requirement already satisfied: packaging in ./.venv-tiny-encoder/lib/python3.14/site-packages (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2)) (26.3)
+Requirement already satisfied: protobuf>=4.25.8 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from onnxruntime<2,>=1.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 2)) (7.36.2)
+Requirement already satisfied: huggingface-hub<3.0,>=0.16.4 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (2.3.0)
+Requirement already satisfied: click<9.0.0,>=8.4.2 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (8.5.0)
+Requirement already satisfied: filelock>=3.10.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (4.2.4)
+Requirement already satisfied: fsspec>=2023.5.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (2026.9.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.6.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (1.7.0)
+Requirement already satisfied: httpx2<3,>=2.0.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (2.16.0)
+Requirement already satisfied: pyyaml>=5.1 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (6.0.3)
+Requirement already satisfied: tqdm>=4.42.1 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (4.70.1)
+Requirement already satisfied: typing-extensions>=4.1.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (4.16.0)
+Requirement already satisfied: anyio>=4.10 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (4.15.1)
+Requirement already satisfied: httpcore2==2.16.0 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (2.16.0)
+Requirement already satisfied: idna>=3.18 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (3.20)
+Requirement already satisfied: truststore>=0.10 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (0.10.5)
+Requirement already satisfied: h11>=0.16 in ./.venv-tiny-encoder/lib/python3.14/site-packages (from httpcore2==2.16.0->httpx2<3,>=2.0.0->huggingface-hub<3.0,>=0.16.4->tokenizers<1,>=0.20->-r /mnt/c/Development/Cascade/Models/requirements-tiny-encoder.txt (line 3)) (0.16.0)
+
+Stage 2/5: /mnt/c/Development/Cascade/Models/.venv-tiny-encoder/bin/python -m unittest -v test_local_sos.py test_tiny_encoder.py test_cascade_pipeline.py
+test_adds_two_explicit_groups_without_counting_road_numbers (test_local_sos.LocalSosTests.test_adds_two_explicit_groups_without_counting_road_numbers) ... ok
+test_drinking_water_is_a_need_without_a_flood (test_local_sos.LocalSosTests.test_drinking_water_is_a_need_without_a_flood) ... ok
+test_location_form_has_explicit_provenance (test_local_sos.LocalSosTests.test_location_form_has_explicit_provenance) ... ok
+test_mentioned_but_not_requested_boat_is_not_a_requested_item (test_local_sos.LocalSosTests.test_mentioned_but_not_requested_boat_is_not_a_requested_item) ... ok
+test_missing_details_do_not_block_an_sos (test_local_sos.LocalSosTests.test_missing_details_do_not_block_an_sos) ... ok
+test_model_cannot_invent_location_or_resource (test_local_sos.LocalSosTests.test_model_cannot_invent_location_or_resource) ... ok
+test_negated_hazard_is_not_reported (test_local_sos.LocalSosTests.test_negated_hazard_is_not_reported) ... ok
+test_outbox_contains_same_compact_json_and_deduplicates (test_local_sos.LocalSosTests.test_outbox_contains_same_compact_json_and_deduplicates) ... ok
+test_rising_water_and_boat_are_rescue_not_drinking_water (test_local_sos.LocalSosTests.test_rising_water_and_boat_are_rescue_not_drinking_water) ... ok
+test_roadside_address_wins_over_wire_description (test_local_sos.LocalSosTests.test_roadside_address_wins_over_wire_description) ... ok
+test_route_number_is_not_a_people_count (test_local_sos.LocalSosTests.test_route_number_is_not_a_people_count) ... ok
+test_street_abbreviation_and_missing_water_are_preserved (test_local_sos.LocalSosTests.test_street_abbreviation_and_missing_water_are_preserved) ... ok
+test_but_separates_opposite_evidence (test_tiny_encoder.TinyEncoderTests.test_but_separates_opposite_evidence) ... ok
+test_clause_splitting_preserves_address_abbreviation_and_offsets (test_tiny_encoder.TinyEncoderTests.test_clause_splitting_preserves_address_abbreviation_and_offsets) ... ok
+test_encoder_mode_can_be_compared_without_rule_labels (test_tiny_encoder.TinyEncoderTests.test_encoder_mode_can_be_compared_without_rule_labels) ... ok
+test_enrichment_keeps_uncertainty_and_source_quote (test_tiny_encoder.TinyEncoderTests.test_enrichment_keeps_uncertainty_and_source_quote) ... ok
+test_hybrid_can_remove_rule_labels_explicitly_denied_by_the_message (test_tiny_encoder.TinyEncoderTests.test_hybrid_can_remove_rule_labels_explicitly_denied_by_the_message) ... ok
+test_hybrid_honors_clear_negative_request_and_resolved_hazard (test_tiny_encoder.TinyEncoderTests.test_hybrid_honors_clear_negative_request_and_resolved_hazard) ... ok
+test_json_writer_replaces_atomically_valid_json (test_tiny_encoder.TinyEncoderTests.test_json_writer_replaces_atomically_valid_json) ... ok
+test_intent_emergency_report (test_cascade_pipeline.CascadePipelineTests.test_intent_emergency_report) ... ok
+test_intent_field_update (test_cascade_pipeline.CascadePipelineTests.test_intent_field_update) ... ok
+test_intent_no_call (test_cascade_pipeline.CascadePipelineTests.test_intent_no_call) ... ok
+test_intent_request_assistance (test_cascade_pipeline.CascadePipelineTests.test_intent_request_assistance) ... ok
+test_intent_request_closure (test_cascade_pipeline.CascadePipelineTests.test_intent_request_closure) ... ok
+test_intent_volunteer_offer (test_cascade_pipeline.CascadePipelineTests.test_intent_volunteer_offer) ... ok
+test_pipeline_initialization (test_cascade_pipeline.CascadePipelineTests.test_pipeline_initialization) ... ok
+test_polarity_gate_honors_explicit_negation (test_cascade_pipeline.CascadePipelineTests.test_polarity_gate_honors_explicit_negation) ... ok
+test_process_emergency_builds_envelope (test_cascade_pipeline.CascadePipelineTests.test_process_emergency_builds_envelope) ... ok
+test_process_non_emergency_provides_structured_result (test_cascade_pipeline.CascadePipelineTests.test_process_non_emergency_provides_structured_result) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.191s
+
+OK
+
+Stage 3/5: /mnt/c/Development/Cascade/Models/.venv-tiny-encoder/bin/python -u /mnt/c/Development/Cascade/Models/prepare_tiny_encoder.py
+CPU encoder setup: no GPU training
+  cached encoder.onnx
+  cached tokenizer.json
+  cached config.json
+  cached README.md
+  encoder smoke check passed: (1, 384)
+  fit small head: 198 training / 66 validation examples
+  SAVED and reloaded: /mnt/c/Development/Cascade/Models/checkpoints/tiny_encoder/head.json
+  model bundle: 17.23 MiB
+  validation: {"examples": 66, "tp": 45, "fp": 11, "fn": 13, "exact": 45}
+
+Stage 4/5: /mnt/c/Development/Cascade/Models/.venv-tiny-encoder/bin/python -u /mnt/c/Development/Cascade/Models/train_pipeline.py
+=== Stage 1: Encoder already at /mnt/c/Development/Cascade/Models/checkpoints/tiny_encoder ===
+  Encoder ready: (1, 384)
+
+=== Stage 2: Training intent classifier ===
+  Training examples: 2400
+  Validation examples: 300
+  Training distribution:
+    submit_emergency_report: 600
+    register_volunteer_offer: 360
+    submit_field_update: 360
+    request_assistance: 600
+    request_report_closure: 240
+    no_call: 240
+  Saved intent head: /mnt/c/Development/Cascade/Models/checkpoints/tiny_encoder/intent_head.json
+  Validation accuracy: 99.0%
+  Best regularization: 5.0
+
+=== Stage 3: Smoke test ===
+  [OK] 'Water is rising and we are trapped on the roof!...' -> submit_emergency_report (42.8%)
+  [OK] 'I have a boat and can help with rescue operations....' -> register_volunteer_offer (26.1%)
+  [OK] 'The main road is blocked by fallen trees....' -> submit_field_update (20.5%)
+  [OK] 'Can you show me a safe route to the hospital?...' -> request_assistance (49.4%)
+  [OK] 'Report REQ-123 can be closed, everyone was rescued...' -> request_report_closure (42.1%)
+  [OK] 'What time does the meeting start?...' -> no_call (36.3%)
+  Smoke test: 6/6 correct
+
+=== Stage 4: Gold test evaluation ===
+  Gold intent accuracy: 114/114 (100.0%)
+
+  Saved results to /mnt/c/Development/Cascade/Models/checkpoints/pipeline_eval/training_results.json
+
+=== Pipeline training complete ===
+  Total model bundle: 17.23 MiB
+
+Stage 5/5: /mnt/c/Development/Cascade/Models/.venv-tiny-encoder/bin/python -u /mnt/c/Development/Cascade/Models/evaluate_pipeline.py --show-errors 5
+Loading pipeline...
+
+============================================================
+SECTION 1: Intent Classification
+============================================================
+
+Intent accuracy: 114/114 (100.0%)
+Intent latency: median=0.9ms, p95=1.1ms
+
+Per-class breakdown:
+  submit_emergency_report       : 20/20 (100%)
+  register_volunteer_offer      : 18/18 (100%)
+  submit_field_update           : 18/18 (100%)
+  request_assistance            : 24/24 (100%)
+  request_report_closure        : 16/16 (100%)
+  no_call                       : 18/18 (100%)
+
+============================================================
+SECTION 2: Emergency Label + Slot Extraction
+============================================================
+
+gold_development: 20 cases
+  rules    all_exact=8/20  needs_exact=10/20  need_recall=16/27 fp=1  hazard_recall=20/27 fp=0
+  encoder  all_exact=3/20  needs_exact=9/20  need_recall=9/27 fp=2  hazard_recall=17/27 fp=4
+  hybrid   all_exact=7/20  needs_exact=10/20  need_recall=17/27 fp=2  hazard_recall=20/27 fp=4
+  HYBRID ERROR: 'Massive structural collapse at 500 Industrial Parkway. Roof gave way, 3 workers pinned under steel g'
+    fields=['needs']
+    expected={"needs": ["rescue", "medical_help"]}
+    hybrid  ={"needs": ["rescue"]}
+  HYBRID ERROR: 'There is a severe chemical leak from tanker car behind Crestview High School. Yellow fumes spreading'
+    fields=['needs', 'hazards', 'location_text']
+    expected={"needs": ["evacuation"], "hazards": ["chemical_hazard"], "location_text": "behind Crestview High School"}
+    hybrid  ={"needs": [], "hazards": ["chemical_hazard", "landslide"], "location_text": "Crestview High School"}
+  HYBRID ERROR: 'We have 8 elderly patients stranded without drinking water and generator fuel at St. Jude Care Cente'
+    fields=['needs', 'hazards']
+    expected={"needs": ["water", "supplies"], "hazards": ["power_outage"]}
+    hybrid  ={"needs": ["rescue", "supplies", "water"], "hazards": []}
+  HYBRID ERROR: 'Flash flood waters reached hood of car on South Creek Road. Driver and 1 passenger stuck inside vehi'
+    fields=['needs']
+    expected={"needs": ["rescue"]}
+    hybrid  ={"needs": ["rescue", "transport"]}
+  HYBRID ERROR: 'Wildfire jumping ridge top towards Oakwood Subdivision. Wind pushing heavy smoke into valley, 12 res'
+    fields=['needs', 'hazards', 'location_text']
+    expected={"needs": ["evacuation", "rescue"], "hazards": ["fire", "severe_weather"], "location_text": "Oakwood Subdivision"}
+    hybrid  ={"needs": ["rescue"], "hazards": ["fire", "landslide"], "location_text": "dead-end cul-de-sac"}
+
+synthetic_challenge: 50 cases
+  rules    all_exact=22/50  needs_exact=32/50  need_recall=13/27 fp=5  hazard_recall=8/19 fp=2
+  encoder  all_exact=22/50  needs_exact=32/50  need_recall=19/27 fp=11  hazard_recall=14/19 fp=10
+  hybrid   all_exact=46/50  needs_exact=47/50  need_recall=25/27 fp=1  hazard_recall=18/19 fp=0
+  HYBRID ERROR: 'Please send medicine for the woman who has run out of insulin.'
+    fields=['needs']
+    expected={"needs": ["medicine"]}
+    hybrid  ={"needs": ["medical_help", "medicine"]}
+  HYBRID ERROR: 'The retaining wall failed and dirt is sliding over the access road.'
+    fields=['hazards']
+    expected={"hazards": ["landslide", "unsafe_road"]}
+    hybrid  ={"hazards": ["landslide"]}
+  HYBRID ERROR: 'Please find a safe route away from the fire before the wind changes.'
+    fields=['needs']
+    expected={"needs": ["evacuation"]}
+    hybrid  ={"needs": []}
+  HYBRID ERROR: 'There is a power outage and a patient needs oxygen connected to a working source.'
+    fields=['needs']
+    expected={"needs": ["medical_help"]}
+    hybrid  ={"needs": []}
+
+============================================================
+SECTION 3: Full Pipeline End-to-End
+============================================================
+
+Full pipeline intent accuracy: 114/114 (100.0%)
+Emergency envelopes built: 20/20
+Full pipeline latency: median=0.9ms, p95=3.1ms
+
+Saved summary to /mnt/c/Development/Cascade/Models/checkpoints/pipeline_eval/pipeline_summary.json
+
+Review false labels before enabling any model in the app.

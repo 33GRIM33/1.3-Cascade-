@@ -19,6 +19,8 @@ import org.ghostnet.mesh.core.MeshEvent;
 import org.ghostnet.mesh.core.MeshModule;
 import org.ghostnet.mesh.core.MessageCodec;
 import org.ghostnet.mesh.core.NearbyPermissionPolicy;
+import org.ghostnet.mesh.core.CascadeEmergency;
+import org.ghostnet.mesh.core.CascadeExtractor;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -117,17 +119,22 @@ public final class DebugActivity extends Activity {
             recipient.setError("Enter the destination's node ID, or * for broadcast"); return;
         }
         if (to.equals(nodeId)) { recipient.setError("Use another phone's ID"); return; }
-        String body = message.getText().toString();
-        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-        if (bytes.length == 0 || bytes.length > 1400) { message.setError("Enter a short message (1–1400 UTF-8 bytes)"); return; }
+        String body = message.getText().toString().trim();
+        if (body.isEmpty()) { message.setError("Enter an emergency description (1–1400 UTF-8 bytes)"); return; }
+        
+        // Offline CASCADE AI extraction
+        CascadeEmergency emergency = CascadeExtractor.extract(body);
+        byte[] bytes = emergency.toJsonBytes();
+        if (bytes.length > 1800) { message.setError("Message payload exceeds wire limit"); return; }
         getPreferences(MODE_PRIVATE).edit().putString("recipient", to).apply();
         String id = module.publish(to, MeshEvent.Type.DISTRESS, bytes, 300000, 4, 10);
         PacketView packet = new PacketView();
-        packet.id = id; packet.direction = "SENT"; packet.text = body;
+        packet.id = id; packet.direction = "SENT";
+        packet.text = formatEmergencySummary(emergency);
         packet.origin = nodeId; packet.via = nodeId; packet.recipient = to;
         packet.hops = 4; packet.status = "QUEUED"; packet.timeMs = System.currentTimeMillis();
         packets.put(id, packet); trimPackets(); renderPackets();
-        append("Submitted id=" + id + " to=" + to);
+        append("Submitted id=" + id + " to=" + to + " (" + emergency.intent + "/" + emergency.urgency + ")");
         message.setText("");
     }
     private boolean granted(String permission) { return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED; }
@@ -237,7 +244,12 @@ public final class DebugActivity extends Activity {
             packet = new PacketView();
             packet.id = event.id;
             packet.direction = "RECEIVED";
-            packet.text = new String(event.payload, StandardCharsets.UTF_8);
+            CascadeEmergency emergency = CascadeEmergency.fromJsonBytes(event.payload);
+            if (emergency != null) {
+                packet.text = formatEmergencySummary(emergency);
+            } else {
+                packet.text = new String(event.payload, StandardCharsets.UTF_8);
+            }
             packet.origin = event.originId;
             packet.recipient = event.recipientId;
             packet.timeMs = System.currentTimeMillis();
@@ -249,6 +261,16 @@ public final class DebugActivity extends Activity {
         packet.hops = event.hopLimit;
         if (packet.status == null) packet.status = "DELIVERED TO THIS PHONE";
         trimPackets(); renderPackets();
+    }
+
+    private String formatEmergencySummary(CascadeEmergency e) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(e.intent).append(" • ").append(e.urgency.toUpperCase(Locale.US)).append("]");
+        if (e.peopleCount != null) sb.append(" [").append(e.peopleCount).append(" people]");
+        if (!e.needs.isEmpty()) sb.append("\nNeeds: ").append(String.join(", ", e.needs));
+        if (!e.hazards.isEmpty()) sb.append("\nHazards: ").append(String.join(", ", e.hazards));
+        sb.append("\n\"").append(e.rawText).append("\"");
+        return sb.toString();
     }
 
     private void recordStatus(String id, String delivery) {

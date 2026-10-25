@@ -1,0 +1,19 @@
+{
+  "accepted": false,
+  "reason": "Insufficient semantic generalization; not connected to local_sos.",
+  "bytes": 938847,
+  "validation": {
+    "n": 66,
+    "tp": 22,
+    "fp": 18,
+    "fn": 35,
+    "exact": 23
+  },
+  "existing_gold": {
+    "cases": 20,
+    "needs_exact": 5,
+    "hazards_exact": 5,
+    "location_exact_raw": 9
+  },
+  "note": "Gold is a development set. Scores were measured before the later slot augmentation."
+}

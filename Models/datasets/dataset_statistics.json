@@ -1,0 +1,54 @@
+{
+  "total_records": 3000,
+  "splits": {
+    "train": 2400,
+    "val": 300,
+    "test": 300
+  },
+  "tool_breakdown_total": {
+    "submit_emergency_report": 750,
+    "register_volunteer_offer": 450,
+    "submit_field_update": 450,
+    "request_assistance": 750,
+    "request_assistance_safe_route": 250,
+    "request_assistance_shelter": 250,
+    "request_assistance_local_updates": 250,
+    "request_report_closure": 300,
+    "no_call": 300
+  },
+  "tool_breakdown_by_split": {
+    "train": {
+      "submit_emergency_report": 600,
+      "register_volunteer_offer": 360,
+      "submit_field_update": 360,
+      "request_assistance": 600,
+      "request_assistance_safe_route": 200,
+      "request_assistance_shelter": 200,
+      "request_assistance_local_updates": 200,
+      "request_report_closure": 240,
+      "no_call": 240
+    },
+    "val": {
+      "submit_emergency_report": 75,
+      "register_volunteer_offer": 45,
+      "submit_field_update": 45,
+      "request_assistance": 75,
+      "request_assistance_safe_route": 25,
+      "request_assistance_shelter": 25,
+      "request_assistance_local_updates": 25,
+      "request_report_closure": 30,
+      "no_call": 30
+    },
+    "test": {
+      "submit_emergency_report": 75,
+      "register_volunteer_offer": 45,
+      "submit_field_update": 45,
+      "request_assistance": 75,
+      "request_assistance_safe_route": 25,
+      "request_assistance_shelter": 25,
+      "request_assistance_local_updates": 25,
+      "request_report_closure": 30,
+      "no_call": 30
+    }
+  }
+}

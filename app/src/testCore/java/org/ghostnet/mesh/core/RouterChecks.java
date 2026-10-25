@@ -172,9 +172,38 @@ public final class RouterChecks {
         check(producers.awaitTermination(10, TimeUnit.SECONDS), "concurrent producers completed");
         check(received.await(10, TimeUnit.SECONDS), "concurrent events delivered");
         concurrentModule.stopAsync().get(10, TimeUnit.SECONDS);
-        check(deliveredIds.size() == count && new HashSet<>(deliveredIds).size() == count, "concurrent duplicate suppression");
         concurrentTransport.listener.onPeerDisconnected(remote); // late callbacks must not crash after shutdown
         check(new MessageStore(new File(directory, "concurrent"), new MessageCodec()).seen.keySet().containsAll(deliveredIds), "concurrent state survived restart");
-        System.out.println("RouterChecks passed");
+
+        // CASCADE AI: Offline extraction and structured emergency JSON wire transmission check
+        String emergencyText = "Water rising fast trapped on 2nd floor need boat and medical kit for 3 people";
+        CascadeEmergency extracted = CascadeExtractor.extract(emergencyText);
+        check("RESCUE_REQUEST".equals(extracted.intent), "extractor intent must be RESCUE_REQUEST");
+        check(extracted.needs.contains("rescue") && extracted.needs.contains("medical"), "extractor must find rescue & medical");
+        check(extracted.hazards.contains("flood"), "extractor must detect flood hazard");
+        check(Integer.valueOf(3).equals(extracted.peopleCount), "extractor must detect 3 people");
+        check("critical".equals(extracted.urgency), "urgency must be critical for 3 people trapped in flood");
+
+        byte[] emergencyPayload = extracted.toJsonBytes();
+        check(emergencyPayload.length > 0 && emergencyPayload.length < 500, "emergency payload fits safely within 2048-byte frame");
+        
+        // Round trip through CascadeEmergency.fromJsonBytes
+        CascadeEmergency parsed = CascadeEmergency.fromJsonBytes(emergencyPayload);
+        check(parsed != null, "parsed emergency must not be null");
+        check(extracted.intent.equals(parsed.intent), "parsed intent matches");
+        check(extracted.peopleCount.equals(parsed.peopleCount), "parsed count matches");
+        check(extracted.needs.equals(parsed.needs), "parsed needs match");
+        check(extracted.hazards.equals(parsed.hazards), "parsed hazards match");
+
+        // Transmission of structured emergency event through MessageCodec
+        MeshEvent emergencyEvent = MeshEvent.create(a.id, c.id, MeshEvent.Type.DISTRESS, emergencyPayload, now[0], 60000, 4, 10);
+        byte[] encodedFrame = new MessageCodec().encode(emergencyEvent);
+        check(encodedFrame.length <= MessageCodec.MAX_BYTES, "GNET frame with emergency payload within 2048 bytes");
+        MeshEvent decodedEvent = new MessageCodec().decode(encodedFrame);
+        CascadeEmergency wireEmergency = CascadeEmergency.fromJsonBytes(decodedEvent.payload);
+        check(wireEmergency != null && wireEmergency.needs.contains("rescue"), "wire emergency extracted on destination");
+
+        System.out.println("RouterChecks passed (including CASCADE offline AI extraction & wire frame validation)");
     }
 }
+

@@ -1,8 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv*/
+.uv-cache/
+.pytest_cache/
+
+# Android / Gradle
 .gradle/
-.idea/
 build/
-**/build/
+app/build/
+mesh/build/
 local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
+captures/
+.externalNativeBuild
+.cxx
+
+# IDE & OS
+.idea/
+.vscode/
 *.iml
+.DS_Store
+Thumbs.db
 .core-classes/
 dist/
+mesh-state.bin
+

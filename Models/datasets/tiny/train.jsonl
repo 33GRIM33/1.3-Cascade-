@@ -1,0 +1,198 @@
+{"text":"Please rescue us.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:0"}
+{"text":"We cannot get out of the building.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:1"}
+{"text":"Someone is trapped under debris.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:2"}
+{"text":"We are cut off and need a rescue boat.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:4"}
+{"text":"A child is clinging to a branch in the river.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:5"}
+{"text":"People are pinned beneath the wreckage.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:6"}
+{"text":"Help us escape from this place.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:8"}
+{"text":"The exit is blocked and we are stuck inside.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:9"}
+{"text":"Send a search and rescue team.","labels":["need:rescue"],"source":"authored synthetic seed","family_id":"need:rescue:10"}
+{"text":"We need an ambulance.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:0"}
+{"text":"Send a doctor or paramedic.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:1"}
+{"text":"Someone is bleeding badly.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:2"}
+{"text":"A person has stopped breathing.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:4"}
+{"text":"There are injured people here.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:5"}
+{"text":"A child is having a seizure.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:6"}
+{"text":"He has a broken leg and needs treatment.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:8"}
+{"text":"She is struggling to breathe.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:9"}
+{"text":"We need first aid for the wounded.","labels":["need:medical_help"],"source":"authored synthetic seed","family_id":"need:medical_help:10"}
+{"text":"I need my medication.","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:0"}
+{"text":"We have run out of insulin.","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:1"}
+{"text":"Please bring prescription drugs.","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:2"}
+{"text":"Our supply of tablets has finished.","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:4"}
+{"text":"Can you send antibiotics?","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:5"}
+{"text":"We have no medicines left.","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:6"}
+{"text":"I cannot find my prescription medicine.","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:8"}
+{"text":"We need replacement medication urgently.","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:9"}
+{"text":"There are no doses remaining.","labels":["need:medicine"],"source":"authored synthetic seed","family_id":"need:medicine:10"}
+{"text":"We need to evacuate this area.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:0"}
+{"text":"Please help residents move to safety.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:1"}
+{"text":"Get everyone away from the approaching danger.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:2"}
+{"text":"We need help leaving before the hazard reaches us.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:4"}
+{"text":"Move the patients out to a safe place.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:5"}
+{"text":"Please evacuate the building.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:6"}
+{"text":"Help us leave this unsafe area.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:8"}
+{"text":"The neighbourhood needs immediate evacuation.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:9"}
+{"text":"We need to get the residents out of danger.","labels":["need:evacuation"],"source":"authored synthetic seed","family_id":"need:evacuation:10"}
+{"text":"We need food.","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:0"}
+{"text":"We have nothing to eat.","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:1"}
+{"text":"Please bring meals for us.","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:2"}
+{"text":"Our food supplies have run out.","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:4"}
+{"text":"There is no baby formula left.","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:5"}
+{"text":"Send rice and bread.","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:6"}
+{"text":"Please deliver something to eat.","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:8"}
+{"text":"We are short of food for the people here.","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:9"}
+{"text":"Can someone provide baby formula?","labels":["need:food"],"source":"authored synthetic seed","family_id":"need:food:10"}
+{"text":"We need drinking water.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:0"}
+{"text":"We have nothing safe to drink.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:1"}
+{"text":"Please send bottled water.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:2"}
+{"text":"We are thirsty and need water.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:4"}
+{"text":"There is no clean water available.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:5"}
+{"text":"Bring potable water for the children.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:6"}
+{"text":"The water bottles are empty and we need more.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:8"}
+{"text":"Please deliver clean water.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:9"}
+{"text":"We need water supplies.","labels":["need:water"],"source":"authored synthetic seed","family_id":"need:water:10"}
+{"text":"We need somewhere safe to stay.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:0"}
+{"text":"Please find us emergency shelter.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:1"}
+{"text":"We have nowhere to sleep tonight.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:2"}
+{"text":"Please arrange a place to stay.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:4"}
+{"text":"We are sleeping outside without shelter.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:5"}
+{"text":"We need temporary housing.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:6"}
+{"text":"Our family needs a roof over our heads.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:8"}
+{"text":"We need a safe shelter for the night.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:9"}
+{"text":"Please give us a place to sleep.","labels":["need:shelter"],"source":"authored synthetic seed","family_id":"need:shelter:10"}
+{"text":"We need transport.","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:0"}
+{"text":"Please send a vehicle to collect us.","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:1"}
+{"text":"We need a wheelchair accessible van.","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:2"}
+{"text":"Arrange a bus for these people.","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:4"}
+{"text":"We need transportation to the hospital.","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:5"}
+{"text":"Please pick us up in a car.","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:6"}
+{"text":"Can you arrange transport for us?","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:8"}
+{"text":"Please send a van.","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:9"}
+{"text":"We have no way to travel to the shelter.","labels":["need:transport"],"source":"authored synthetic seed","family_id":"need:transport:10"}
+{"text":"We need blankets.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:0"}
+{"text":"Please bring generator fuel.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:1"}
+{"text":"Send batteries and torches.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:2"}
+{"text":"We need dry clothes.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:4"}
+{"text":"Please deliver emergency supplies.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:5"}
+{"text":"We need a charging battery.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:6"}
+{"text":"We are short of essential supplies.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:8"}
+{"text":"There is no fuel remaining.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:9"}
+{"text":"Please send hygiene supplies.","labels":["need:supplies"],"source":"authored synthetic seed","family_id":"need:supplies:10"}
+{"text":"We need a way to contact help.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:0"}
+{"text":"Please send a satellite phone.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:1"}
+{"text":"We have no means of communication.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:2"}
+{"text":"There is no way to call anyone.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:4"}
+{"text":"Please restore our communication link.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:5"}
+{"text":"We cannot contact the rescue teams.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:6"}
+{"text":"Our communications have failed.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:8"}
+{"text":"We are cut off from all communication.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:9"}
+{"text":"We need communication equipment.","labels":["need:communication"],"source":"authored synthetic seed","family_id":"need:communication:10"}
+{"text":"Floodwater is entering the homes.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:0"}
+{"text":"The river has burst its banks.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:1"}
+{"text":"Water is rising around us.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:2"}
+{"text":"There is a flash flood.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:4"}
+{"text":"Water is coming inside the house.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:5"}
+{"text":"The river is overflowing.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:6"}
+{"text":"Flooding has submerged the road.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:8"}
+{"text":"A storm surge is hitting the coast.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:9"}
+{"text":"The area is under floodwater.","labels":["hazard:flood"],"source":"authored synthetic seed","family_id":"hazard:flood:10"}
+{"text":"The building is on fire.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:0"}
+{"text":"Flames are spreading through the trees.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:1"}
+{"text":"There is thick smoke in the room.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:2"}
+{"text":"The roof is burning.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:4"}
+{"text":"We can see flames outside.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:5"}
+{"text":"A vehicle has caught fire.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:6"}
+{"text":"A forest fire is getting closer.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:8"}
+{"text":"The house is ablaze.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:9"}
+{"text":"There is a fire nearby.","labels":["hazard:fire"],"source":"authored synthetic seed","family_id":"hazard:fire:10"}
+{"text":"The building has collapsed.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:0"}
+{"text":"The roof caved in.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:1"}
+{"text":"A wall has fallen down.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:2"}
+{"text":"The bridge has collapsed.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:4"}
+{"text":"The structure has given way.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:5"}
+{"text":"The building is crumbling.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:6"}
+{"text":"The walls are collapsing.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:8"}
+{"text":"The building is now a pile of rubble.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:9"}
+{"text":"A floor has collapsed.","labels":["hazard:structural_collapse"],"source":"authored synthetic seed","family_id":"hazard:structural_collapse:10"}
+{"text":"There has been a landslide.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:0"}
+{"text":"Mud is sliding down the hill.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:1"}
+{"text":"A mudslide is approaching.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:2"}
+{"text":"The hillside is collapsing onto the road.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:4"}
+{"text":"A mudflow has reached the houses.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:5"}
+{"text":"A rockslide has hit the village.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:6"}
+{"text":"The slope has slipped.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:8"}
+{"text":"The ground on the hill is sliding.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:9"}
+{"text":"There is a landslip nearby.","labels":["hazard:landslide"],"source":"authored synthetic seed","family_id":"hazard:landslide:10"}
+{"text":"A tornado is approaching.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:0"}
+{"text":"There is a severe blizzard.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:1"}
+{"text":"A hurricane is hitting us.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:2"}
+{"text":"Gale force winds are damaging the homes.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:4"}
+{"text":"There is a violent thunderstorm.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:5"}
+{"text":"A cyclone has reached the town.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:6"}
+{"text":"There are extreme winds outside.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:8"}
+{"text":"Severe hail is smashing the windows.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:9"}
+{"text":"A dangerous snowstorm is coming.","labels":["hazard:severe_weather"],"source":"authored synthetic seed","family_id":"hazard:severe_weather:10"}
+{"text":"There is a chemical leak.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:0"}
+{"text":"Toxic fumes are spreading.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:1"}
+{"text":"A gas pipe has ruptured.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:2"}
+{"text":"A tanker is spilling hazardous chemicals.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:4"}
+{"text":"There is a poisonous gas cloud.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:5"}
+{"text":"The gas main is leaking.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:6"}
+{"text":"Toxic waste is leaking into the area.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:8"}
+{"text":"There are dangerous fumes outside.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:9"}
+{"text":"A tank is releasing toxic gas.","labels":["hazard:chemical_hazard"],"source":"authored synthetic seed","family_id":"hazard:chemical_hazard:10"}
+{"text":"The electricity is out.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:0"}
+{"text":"We have lost power.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:1"}
+{"text":"There is a power outage.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:2"}
+{"text":"There is no electricity in the area.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:4"}
+{"text":"The power supply has been cut off.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:5"}
+{"text":"Our building has no electrical power.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:6"}
+{"text":"The electricity stopped working.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:8"}
+{"text":"The lights went out across the town.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:9"}
+{"text":"Power is down throughout the village.","labels":["hazard:power_outage"],"source":"authored synthetic seed","family_id":"hazard:power_outage:10"}
+{"text":"The road is blocked.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:0"}
+{"text":"The bridge is impassable.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:1"}
+{"text":"The road is washed away.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:2"}
+{"text":"The road is closed due to damage.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:4"}
+{"text":"Vehicles cannot pass through the road.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:5"}
+{"text":"The highway is obstructed.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:6"}
+{"text":"The road surface has caved in.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:8"}
+{"text":"Debris is blocking the street.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:9"}
+{"text":"The route is impassable.","labels":["hazard:unsafe_road"],"source":"authored synthetic seed","family_id":"hazard:unsafe_road:10"}
+{"text":"Someone is firing a gun.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:0"}
+{"text":"There are gunshots nearby.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:1"}
+{"text":"Armed people are attacking residents.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:2"}
+{"text":"Someone is threatening us with a weapon.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:4"}
+{"text":"People are being assaulted.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:5"}
+{"text":"There is shooting outside.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:6"}
+{"text":"Someone has a knife and is attacking people.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:8"}
+{"text":"We are under attack.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:9"}
+{"text":"There is armed violence in the street.","labels":["hazard:violence"],"source":"authored synthetic seed","family_id":"hazard:violence:10"}
+{"text":"Everyone is safe.","labels":[],"source":"authored synthetic seed","family_id":"negative:0"}
+{"text":"We have enough food and water.","labels":[],"source":"authored synthetic seed","family_id":"negative:1"}
+{"text":"No help is needed.","labels":[],"source":"authored synthetic seed","family_id":"negative:2"}
+{"text":"There is no fire here.","labels":[],"source":"authored synthetic seed","family_id":"negative:4"}
+{"text":"We are not trapped.","labels":[],"source":"authored synthetic seed","family_id":"negative:5"}
+{"text":"The medicine has already arrived.","labels":[],"source":"authored synthetic seed","family_id":"negative:6"}
+{"text":"The power is working normally.","labels":[],"source":"authored synthetic seed","family_id":"negative:8"}
+{"text":"The road is open and safe.","labels":[],"source":"authored synthetic seed","family_id":"negative:9"}
+{"text":"No one is injured.","labels":[],"source":"authored synthetic seed","family_id":"negative:10"}
+{"text":"There is no flooding in this area.","labels":[],"source":"authored synthetic seed","family_id":"negative:12"}
+{"text":"We do not need medical help.","labels":[],"source":"authored synthetic seed","family_id":"negative:13"}
+{"text":"No chemical leak was found.","labels":[],"source":"authored synthetic seed","family_id":"negative:14"}
+{"text":"There is no need for evacuation.","labels":[],"source":"authored synthetic seed","family_id":"negative:16"}
+{"text":"We already have transport.","labels":[],"source":"authored synthetic seed","family_id":"negative:17"}
+{"text":"We have plenty of fuel.","labels":[],"source":"authored synthetic seed","family_id":"negative:18"}
+{"text":"We do not need food.","labels":[],"source":"authored synthetic seed","family_id":"negative:20"}
+{"text":"Please do not send water.","labels":[],"source":"authored synthetic seed","family_id":"negative:21"}
+{"text":"There is no smoke.","labels":[],"source":"authored synthetic seed","family_id":"negative:22"}
+{"text":"The building has not collapsed.","labels":[],"source":"authored synthetic seed","family_id":"negative:24"}
+{"text":"The fire has been extinguished.","labels":[],"source":"authored synthetic seed","family_id":"negative:25"}
+{"text":"We are doing an emergency drill.","labels":[],"source":"authored synthetic seed","family_id":"negative:26"}
+{"text":"I can volunteer tomorrow.","labels":[],"source":"authored synthetic seed","family_id":"negative:28"}
+{"text":"The boat is damaged but everyone is safe.","labels":[],"source":"authored synthetic seed","family_id":"negative:29"}
+{"text":"We do not need shelter.","labels":[],"source":"authored synthetic seed","family_id":"negative:30"}
+{"text":"There are no gunshots here.","labels":[],"source":"authored synthetic seed","family_id":"negative:32"}
+{"text":"There is no landslide.","labels":[],"source":"authored synthetic seed","family_id":"negative:33"}
+{"text":"The storm is over.","labels":[],"source":"authored synthetic seed","family_id":"negative:34"}

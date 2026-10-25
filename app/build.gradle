@@ -14,8 +14,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    androidResources {
+        noCompress 'onnx'
+    }
 }
 
 dependencies {
     implementation project(':mesh')
+    implementation 'com.microsoft.onnxruntime:onnxruntime-android:1.19.0'
 }
+

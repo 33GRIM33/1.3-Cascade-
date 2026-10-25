@@ -1,0 +1,52 @@
+[
+  {
+    "name": "route_submit_emergency_report",
+    "description": "Create a new unverified emergency report from a message describing an emergency, hazard, affected people, or a request for emergency help.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "route_register_volunteer_offer",
+    "description": "Record an explicitly stated offer by a person or organization to help with emergency response.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "route_submit_field_update",
+    "description": "Record an observation or update about local conditions, hazards, roads, evacuation progress, resource availability, or an area's status.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "route_request_assistance",
+    "description": "Handle a user's request for an informational assistance service: safe-route guidance, nearby shelter search, or local updates.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "route_request_report_closure",
+    "description": "Submit a request to resolve or cancel an existing emergency report.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+]

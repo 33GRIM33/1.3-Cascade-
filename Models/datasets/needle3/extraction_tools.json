@@ -1,0 +1,393 @@
+[
+  {
+    "name": "submit_emergency_report",
+    "description": "Create a new unverified emergency report from a message describing an emergency, hazard, affected people, or a request for emergency help.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "needs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "medical_help",
+              "medicine",
+              "rescue",
+              "evacuation",
+              "food",
+              "water",
+              "shelter",
+              "transport",
+              "communication",
+              "supplies",
+              "other"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "need_details": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "hazards": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "flood",
+              "fire",
+              "structural_collapse",
+              "landslide",
+              "severe_weather",
+              "chemical_hazard",
+              "unsafe_road",
+              "violence",
+              "power_outage",
+              "other"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "location_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "affected_people_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "urgency_cue": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidence_quotes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "needs",
+        "need_details",
+        "hazards",
+        "location_text",
+        "affected_people_count",
+        "urgency_cue",
+        "evidence_quotes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "register_volunteer_offer",
+    "description": "Record an explicitly stated offer by a person or organization to help with emergency response.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "availability_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "location_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "capacity_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "evidence_quotes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "capabilities",
+        "availability_text",
+        "location_text",
+        "capacity_text",
+        "constraints",
+        "evidence_quotes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "submit_field_update",
+    "description": "Record an observation or update about local conditions, hazards, roads, evacuation progress, resource availability, or an area's status.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "update_type": {
+          "type": "string",
+          "enum": [
+            "hazard",
+            "road_status",
+            "evacuation_status",
+            "area_status",
+            "resource_status",
+            "infrastructure_status",
+            "other"
+          ]
+        },
+        "observation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "observed_time_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_role_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidence_quotes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "update_type",
+        "observation",
+        "location_text",
+        "observed_time_text",
+        "source_role_text",
+        "evidence_quotes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "request_assistance",
+    "description": "Handle a user's request for an informational assistance service: safe-route guidance, nearby shelter search, or local updates.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "request_type": {
+          "type": "string",
+          "enum": [
+            "safe_route",
+            "shelter",
+            "local_updates"
+          ]
+        },
+        "origin_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "destination_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "near_location_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "avoid_hazards": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "flood",
+              "fire",
+              "structural_collapse",
+              "landslide",
+              "severe_weather",
+              "chemical_hazard",
+              "unsafe_road",
+              "violence",
+              "power_outage",
+              "other"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "people_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "accessibility_needs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "other_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "hazard",
+              "road_status",
+              "evacuation_status",
+              "area_status",
+              "resource_status",
+              "infrastructure_status",
+              "shelter",
+              "rescue",
+              "other"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "since_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidence_quotes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "request_type",
+        "origin_text",
+        "destination_text",
+        "near_location_text",
+        "avoid_hazards",
+        "people_count",
+        "accessibility_needs",
+        "other_requirements",
+        "topics",
+        "since_text",
+        "evidence_quotes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "request_report_closure",
+    "description": "Submit a request to resolve or cancel an existing emergency report.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "report_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "requested_status": {
+          "type": "string",
+          "enum": [
+            "resolved",
+            "cancelled"
+          ]
+        },
+        "reason_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confirmation_source_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidence_quotes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "report_id",
+        "requested_status",
+        "reason_text",
+        "confirmation_source_text",
+        "evidence_quotes"
+      ],
+      "additionalProperties": false
+    }
+  }
+]

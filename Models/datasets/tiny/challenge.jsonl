@@ -1,0 +1,50 @@
+{"text":"The tide has covered our street, the front room is filling and we are on the roof.","labels":["need:rescue","hazard:flood"]}
+{"text":"Our van is waiting; everyone has boarded and no one needs help.","labels":[]}
+{"text":"Two people are stuck in the lift while smoke enters the stairwell.","labels":["need:rescue","hazard:fire"]}
+{"text":"Please send medicine for the woman who has run out of insulin.","labels":["need:medicine"]}
+{"text":"There is enough drinking water here; we do not need more.","labels":[]}
+{"text":"A chemical smell is coming from the broken pipe behind the school.","labels":["hazard:chemical_hazard"]}
+{"text":"The bridge is still standing and cars can pass normally.","labels":[]}
+{"text":"An older man fell and cannot stand after hurting his hip.","labels":["need:medical_help"]}
+{"text":"Please arrange somewhere safe for families to spend tonight.","labels":["need:shelter"]}
+{"text":"The flames have been put out and responders say the area is safe.","labels":[]}
+{"text":"The road has disappeared under a mudslide; no vehicles can get through.","labels":["hazard:landslide","hazard:unsafe_road"]}
+{"text":"We are hungry, have no food left, and need supplies for the children.","labels":["need:food","need:supplies"]}
+{"text":"The lights and mobile network both went down after the storm.","labels":["hazard:power_outage"]}
+{"text":"Can someone take the injured residents to the clinic?", "labels":["need:transport","need:medical_help"]}
+{"text":"The family has blankets and a full tank of fuel; no supplies are required.","labels":[]}
+{"text":"A tornado damaged several houses and people are calling out from inside.","labels":["need:rescue","hazard:severe_weather"]}
+{"text":"There is no fire, but the road is blocked by a fallen tree.","labels":["hazard:unsafe_road"]}
+{"text":"We have no way to call the response team; the phone lines are down.","labels":["need:communication"]}
+{"text":"My child is having a seizure and needs urgent attention.","labels":["need:medical_help"]}
+{"text":"We can see floodwater on television but our home is dry and safe.","labels":[]}
+{"text":"Strong wind has taken off the roof and rain is entering the bedrooms.","labels":["hazard:severe_weather"]}
+{"text":"No evacuation is necessary; officials have cleared our neighborhood.","labels":[]}
+{"text":"The generator needs fuel, and our batteries are almost empty.","labels":["need:supplies"]}
+{"text":"A passenger is pinned inside the crashed car and cannot move.","labels":["need:rescue"]}
+{"text":"The hospital has its own working generator and has not lost power.","labels":[]}
+{"text":"Rocks and soil slid down the hillside and buried the entrance.","labels":["hazard:landslide"]}
+{"text":"Please bring clean water and a working radio to our group.","labels":["need:water","need:communication"]}
+{"text":"There are armed men threatening people at the station.","labels":["hazard:violence"]}
+{"text":"My mother is out of her daily tablets and needs the prescription filled.","labels":["need:medicine"]}
+{"text":"We have a shelter and are not asking to be moved.","labels":[]}
+{"text":"A boat is visible downstream, but nobody is trapped or asking for rescue.","labels":[]}
+{"text":"A wave from the storm has broken the sea wall and water is coming in.","labels":["hazard:flood"]}
+{"text":"There is no outbreak and the clinic is treating regular patients.","labels":[]}
+{"text":"Can we get a wheelchair accessible vehicle to the medical center?", "labels":["need:transport"]}
+{"text":"The electricity returned an hour ago, and the tower is working again.","labels":[]}
+{"text":"A ceiling fell on a worker and an ambulance is urgently needed.","labels":["hazard:structural_collapse","need:medical_help"]}
+{"text":"No one here lacks food, water, medicine or a place to sleep.","labels":[]}
+{"text":"The local radio mast is on fire and we cannot contact anyone by phone.","labels":["hazard:fire","need:communication"]}
+{"text":"We have petrol for three days but still need clean water to drink.","labels":["need:water"]}
+{"text":"A bus is coming to collect us; we are safe and do not require transport.","labels":[]}
+{"text":"The retaining wall failed and dirt is sliding over the access road.","labels":["hazard:landslide","hazard:unsafe_road"]}
+{"text":"Please find a safe route away from the fire before the wind changes.","labels":["need:evacuation","hazard:fire"]}
+{"text":"We are not injured, have a charged phone and can leave on our own.","labels":[]}
+{"text":"Our food is fine, but we have no drinking water since the pipe broke.","labels":["need:water"]}
+{"text":"A person is unconscious and not responding to us.","labels":["need:medical_help"]}
+{"text":"No toxic leak has been found and there is no gas odor.","labels":[]}
+{"text":"We need dry clothes, sleeping bags and a tent.","labels":["need:supplies","need:shelter"]}
+{"text":"The creek is rising but the house is on high ground; nobody needs rescue.","labels":["hazard:flood"]}
+{"text":"There is a power outage and a patient needs oxygen connected to a working source.","labels":["hazard:power_outage","need:medical_help"]}
+{"text":"A large crack appeared in the wall but the structure is still stable.","labels":[]}

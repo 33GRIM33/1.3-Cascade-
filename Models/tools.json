@@ -1,0 +1,441 @@
+{
+  "schema_version": "2.0.0",
+  "project": "CASCADE",
+  "description": "Model-facing function contracts for decentralized emergency-response coordination. Tool calls express extracted intent or requests only. All arguments are untrusted model output: the backend must validate them, preserve source attribution, apply permissions and policy, and never treat a model call as verification, authorization, dispatch approval, or confirmation of safety.",
+  "design_notes": {
+    "model_role": "Classify the user's intent and extract only explicitly stated or directly supported facts.",
+    "backend_role": "Validate schemas and evidence; use deterministic policy for routing, permissions, location access, resource matching, dispatch, and lifecycle transitions.",
+    "unknown_values": "Use null for unknown optional scalar values and empty arrays for unknown/not-stated list values. Do not invent values.",
+    "evidence": "Evidence quotes must be exact substrings of the input message; backend should verify this before accepting extracted fields.",
+    "urgent_ambiguity": "If urgent danger is plausible but intent/details are ambiguous, backend should escalate or surface emergency guidance without waiting for optional fields.",
+    "dispatch_safety": "No tool in this file directly dispatches responders, verifies volunteer credentials, guarantees route safety, reserves shelter, or closes a report without backend checks."
+  },
+  "tools": [
+    {
+      "name": "submit_emergency_report",
+      "description": "Create a new unverified emergency report from a message describing an emergency, hazard, affected people, or a request for emergency help. Extract only information explicitly stated or directly supported by the message. Do not infer a diagnosis, location, number of people, or requested resource. Creating a report does not verify the report, dispatch responders, reserve resources, or authorize any real-world action. Use only when the message contains a reportable emergency or request for emergency help; do not use for general questions or ordinary conversation.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "needs": {
+            "type": "array",
+            "description": "Broad kinds of help explicitly requested or clearly described as needed. Empty if no need is stated.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "medical_help",
+                "medicine",
+                "rescue",
+                "evacuation",
+                "food",
+                "water",
+                "shelter",
+                "transport",
+                "communication",
+                "supplies",
+                "other"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "need_details": {
+            "type": "array",
+            "description": "Specific requested items, services, or assistance in the speaker's wording, e.g. 'inflatable boat', 'insulin', 'wheelchair-accessible van'. Do not invent details from a broad need.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "hazards": {
+            "type": "array",
+            "description": "Hazards explicitly reported or directly supported by the message. A hazard can be reported even when no help request is stated.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "flood",
+                "fire",
+                "structural_collapse",
+                "landslide",
+                "severe_weather",
+                "chemical_hazard",
+                "unsafe_road",
+                "violence",
+                "power_outage",
+                "other"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "location_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Location exactly as stated, retaining useful landmark/building/area details. Null if absent. Do not generate coordinates or guess a location."
+          },
+          "affected_people_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Number of people affected or needing help only when explicitly stated. Do not count volunteers, responders, bystanders, or people merely mentioned in another context. Null if unknown."
+          },
+          "urgency_cue": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Short phrase from the message that conveys urgency or immediate danger, e.g. 'water is rising fast'. Null if none is stated. Do not invent urgency or make a medical diagnosis."
+          },
+          "evidence_quotes": {
+            "type": "array",
+            "description": "Short exact excerpts from the message supporting the extracted need, hazard, location, affected-person count, or urgency. Use only literal text from the message; empty if no useful quote.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "needs",
+          "need_details",
+          "hazards",
+          "location_text",
+          "affected_people_count",
+          "urgency_cue",
+          "evidence_quotes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "register_volunteer_offer",
+      "description": "Record an explicitly stated offer by a person or organization to help with emergency response. Store the offer as an unverified claim; this tool does not verify credentials, confirm availability, assign a task, or dispatch the volunteer. Do not use for requests asking for help or for statements that merely mention a skill or vehicle without offering it.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "capabilities": {
+            "type": "array",
+            "description": "Skills, equipment, vehicles, supplies, or assistance explicitly offered, preserving useful specific wording.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "availability_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Exact or concise availability/timing wording stated by the offerer, e.g. 'today until 6 PM'. Null if not stated."
+          },
+          "location_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Where the offerer or offered resources are located, only if stated. Do not infer current location from message metadata; null if absent."
+          },
+          "capacity_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Explicit quantity or capacity offered, e.g. 'can transport 6 people' or 'two boats'. Preserve wording if units are ambiguous. Null if absent."
+          },
+          "constraints": {
+            "type": "array",
+            "description": "Explicit limitations or conditions on the offer, e.g. 'only within the city' or 'needs fuel'. Empty if none stated.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "evidence_quotes": {
+            "type": "array",
+            "description": "Short exact excerpts that show this is an offer and support the extracted details.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "capabilities",
+          "availability_text",
+          "location_text",
+          "capacity_text",
+          "constraints",
+          "evidence_quotes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "submit_field_update",
+      "description": "Record an observation or update about local conditions, hazards, roads, evacuation progress, resource availability, or an area's status. Preserve it as an attributed, unverified report, not independently verified truth. Do not use this tool to create a new emergency-help request or to mark an existing report resolved/cancelled.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "update_type": {
+            "type": "string",
+            "enum": [
+              "hazard",
+              "road_status",
+              "evacuation_status",
+              "area_status",
+              "resource_status",
+              "infrastructure_status",
+              "other"
+            ],
+            "description": "Best matching category for the main observation."
+          },
+          "observation": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Concise factual summary of what the speaker reports. Do not add details or convert an unverified claim into a confirmed fact."
+          },
+          "location_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Location associated with the observation, as stated. Null if absent."
+          },
+          "observed_time_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Time wording stated by the speaker, e.g. 'just now' or 'about 20 minutes ago'. Null if absent; do not invent a timestamp."
+          },
+          "source_role_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "How the speaker identifies their basis/role, if stated, e.g. 'I saw this myself' or 'reported by a shopkeeper'. Do not infer identity or credibility. Null if absent."
+          },
+          "evidence_quotes": {
+            "type": "array",
+            "description": "Short exact excerpts supporting the update and any extracted location/time/source role.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "update_type",
+          "observation",
+          "location_text",
+          "observed_time_text",
+          "source_role_text",
+          "evidence_quotes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "request_assistance",
+      "description": "Handle a user's request for an informational assistance service: safe-route guidance, nearby shelter search, or local updates. This tool requests information only; it does not dispatch responders, guarantee route safety, reserve shelter, or guarantee that local records are complete/current. Use the request_type that matches the user's explicit goal. If the message is instead reporting an emergency or asking for immediate rescue, use submit_emergency_report as appropriate; urgent ambiguity should be escalated by backend policy rather than delaying assistance.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "request_type": {
+            "type": "string",
+            "enum": [
+              "safe_route",
+              "shelter",
+              "local_updates"
+            ],
+            "description": "Which informational service the user is requesting."
+          },
+          "origin_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Origin explicitly stated for a route request. Null if absent; backend may use device location only with app permission and policy approval."
+          },
+          "destination_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Destination explicitly requested for a route request. Null for non-route requests or if omitted."
+          },
+          "near_location_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Area or landmark to search near for shelter/local updates, as stated. Null if absent; backend may use approved device location only with permission."
+          },
+          "avoid_hazards": {
+            "type": "array",
+            "description": "Hazard types the user asks to avoid or that are explicitly part of the route request; do not infer a hazard merely because this is an emergency app.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "flood",
+                "fire",
+                "structural_collapse",
+                "landslide",
+                "severe_weather",
+                "chemical_hazard",
+                "unsafe_road",
+                "violence",
+                "power_outage",
+                "other"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "people_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "description": "Number of people needing shelter or assistance, only when explicitly stated. Null if unknown or not relevant."
+          },
+          "accessibility_needs": {
+            "type": "array",
+            "description": "Explicit accessibility or mobility requirements, e.g. wheelchair access or step-free access.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "other_requirements": {
+            "type": "array",
+            "description": "Other explicit requirements for route/shelter/service, e.g. pet-friendly shelter or family accommodation.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "topics": {
+            "type": "array",
+            "description": "Topics requested for local updates, e.g. hazard, road_status, evacuation_status, resource_status, shelter, rescue. Empty if not specified.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "hazard",
+                "road_status",
+                "evacuation_status",
+                "area_status",
+                "resource_status",
+                "infrastructure_status",
+                "shelter",
+                "rescue",
+                "other"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "since_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Requested time window in the user's wording, e.g. 'since this morning'. Null if not specified."
+          },
+          "evidence_quotes": {
+            "type": "array",
+            "description": "Short exact excerpts showing the user's requested service and supporting any extracted parameters.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "request_type",
+          "origin_text",
+          "destination_text",
+          "near_location_text",
+          "avoid_hazards",
+          "people_count",
+          "accessibility_needs",
+          "other_requirements",
+          "topics",
+          "since_text",
+          "evidence_quotes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "request_report_closure",
+      "description": "Submit a request to resolve or cancel an existing emergency report. This is only a request for a backend-controlled lifecycle transition. The backend must independently validate the report ID, caller identity/role, confirmation source, and any required second confirmation. Never treat model output as authorization, proof that danger has ended, or permission to suppress an active emergency.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "report_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Existing report identifier explicitly supplied or unambiguously selected from trusted application context. Null if unavailable; the backend must not guess."
+          },
+          "requested_status": {
+            "type": "string",
+            "enum": [
+              "resolved",
+              "cancelled"
+            ],
+            "description": "Lifecycle state the user is requesting, not a state the model has verified."
+          },
+          "reason_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Reason explicitly given for the requested closure. Null if absent."
+          },
+          "confirmation_source_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Who the user says confirmed the outcome, e.g. reporter, authorized responder, or operator. This is an unverified claim; backend must authenticate/authorize independently. Null if absent."
+          },
+          "evidence_quotes": {
+            "type": "array",
+            "description": "Short exact excerpts supporting the closure request, report reference, reason, and stated confirmation source.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "report_id",
+          "requested_status",
+          "reason_text",
+          "confirmation_source_text",
+          "evidence_quotes"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}
