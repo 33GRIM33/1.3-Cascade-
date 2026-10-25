@@ -21,19 +21,31 @@ import org.ghostnet.mesh.core.MessageCodec;
 import org.ghostnet.mesh.core.NearbyPermissionPolicy;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /** Small device harness. Keeps the prerequisites and actual transport state visible. */
 public final class DebugActivity extends Activity {
     private MeshModule module;
-    private TextView log, peerText, status;
+    private TextView log, peerText, status, packetFeed;
     private EditText recipient, blocked, message;
     private Button start, publish;
     private String nodeId;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final List<AlertDialog> confirmations = new ArrayList<>();
+    private final LinkedHashMap<String, PacketView> packets = new LinkedHashMap<>();
+    private final SimpleDateFormat clock = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
+    private static final class PacketView {
+        String id, direction, text, origin, via, recipient, status;
+        int hops;
+        long timeMs;
+    }
     private final Runnable refreshPeers = new Runnable() {
         @Override public void run() {
             if (module != null) peerText.setText("Direct peers: " + module.peers());
@@ -59,7 +71,7 @@ public final class DebugActivity extends Activity {
             return insets;
         });
         TextView own = new TextView(this);
-        own.setText("GHOSTNET • Build 0.3\nNode ID:\n" + nodeId);
+        own.setText("GHOSTNET • Build 0.4\nNode ID:\n" + nodeId);
         own.setTextIsSelectable(true); column.addView(own);
         Button copy = button("Copy my node ID"); column.addView(copy);
         copy.setOnClickListener(v -> {
@@ -78,6 +90,17 @@ public final class DebugActivity extends Activity {
         recipient.setText(getPreferences(MODE_PRIVATE).getString("recipient", "")); column.addView(recipient);
         message = input("Distress text for demo"); column.addView(message);
         publish = button("Publish DISTRESS"); publish.setEnabled(false); column.addView(publish);
+
+        TextView packetTitle = new TextView(this);
+        packetTitle.setText("\nMESSAGE PACKETS");
+        packetTitle.setTextSize(18); column.addView(packetTitle);
+        packetFeed = new TextView(this);
+        packetFeed.setText("No messages yet.\nSent and received packets will appear here.");
+        packetFeed.setTextIsSelectable(true); column.addView(packetFeed);
+
+        TextView logTitle = new TextView(this);
+        logTitle.setText("\nTECHNICAL LOG");
+        logTitle.setTextSize(14); column.addView(logTitle);
         log = new TextView(this); log.setTextIsSelectable(true);
         ScrollView scroll = new ScrollView(this); scroll.addView(log);
         column.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
@@ -94,11 +117,18 @@ public final class DebugActivity extends Activity {
             recipient.setError("Enter the destination's node ID, or * for broadcast"); return;
         }
         if (to.equals(nodeId)) { recipient.setError("Use another phone's ID"); return; }
-        byte[] bytes = message.getText().toString().getBytes(StandardCharsets.UTF_8);
+        String body = message.getText().toString();
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
         if (bytes.length == 0 || bytes.length > 1400) { message.setError("Enter a short message (1–1400 UTF-8 bytes)"); return; }
         getPreferences(MODE_PRIVATE).edit().putString("recipient", to).apply();
         String id = module.publish(to, MeshEvent.Type.DISTRESS, bytes, 300000, 4, 10);
+        PacketView packet = new PacketView();
+        packet.id = id; packet.direction = "SENT"; packet.text = body;
+        packet.origin = nodeId; packet.via = nodeId; packet.recipient = to;
+        packet.hops = 4; packet.status = "QUEUED"; packet.timeMs = System.currentTimeMillis();
+        packets.put(id, packet); trimPackets(); renderPackets();
         append("Submitted id=" + id + " to=" + to);
+        message.setText("");
     }
     private boolean granted(String permission) { return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED; }
     private void ensurePermissionsThenStart() {
@@ -157,8 +187,14 @@ public final class DebugActivity extends Activity {
             MeshModule current = new MeshModule(nodeId, transport, new File(getFilesDir(), "mesh-state.bin"));
             module = current; blocked.setEnabled(false);
             current.onLog(this::append);
-            current.onEvent(e -> append("RECEIVED id=" + e.id + " from=" + e.originId + " via=" + e.senderId + " hops=" + e.hopLimit));
-            current.onStatus((id, delivery) -> append("STATUS id=" + id + " " + delivery));
+            current.onEvent(e -> {
+                runOnUiThread(() -> recordEvent(e));
+                append("RECEIVED id=" + e.id + " from=" + e.originId + " via=" + e.senderId + " hops=" + e.hopLimit);
+            });
+            current.onStatus((id, delivery) -> {
+                runOnUiThread(() -> recordStatus(id, delivery.name()));
+                append("STATUS id=" + id + " " + delivery);
+            });
             current.onReady(() -> runOnUiThread(() -> {
                 if (module != current || isDestroyed()) return;
                 status.setText("Ready — searching for phones; compare connection codes when prompted");
@@ -193,6 +229,72 @@ public final class DebugActivity extends Activity {
             if (log.length() > 16000) log.setText(log.getText().subSequence(log.length() - 8000, log.length()));
             log.append(line + "\n");
         });
+    }
+
+    private void recordEvent(MeshEvent event) {
+        PacketView packet = packets.get(event.id);
+        if (packet == null) {
+            packet = new PacketView();
+            packet.id = event.id;
+            packet.direction = "RECEIVED";
+            packet.text = new String(event.payload, StandardCharsets.UTF_8);
+            packet.origin = event.originId;
+            packet.recipient = event.recipientId;
+            packet.timeMs = System.currentTimeMillis();
+            packets.put(event.id, packet);
+        } else if (nodeId.equals(event.originId)) {
+            packet.direction = "SENT / LOCAL BROADCAST";
+        }
+        packet.via = event.senderId;
+        packet.hops = event.hopLimit;
+        if (packet.status == null) packet.status = "DELIVERED TO THIS PHONE";
+        trimPackets(); renderPackets();
+    }
+
+    private void recordStatus(String id, String delivery) {
+        PacketView packet = packets.get(id);
+        if (packet == null) return; // ACKs and restored packets have no display payload in this session.
+        packet.status = friendlyStatus(delivery);
+        renderPackets();
+    }
+
+    private String friendlyStatus(String statusName) {
+        switch (statusName) {
+            case "SENT_TO_PEER": return "SENT TO NEXT PHONE";
+            case "DELIVERED": return "DELIVERED + ACKNOWLEDGED";
+            case "EXPIRED": return "EXPIRED";
+            case "FAILED": return "FAILED";
+            default: return "QUEUED";
+        }
+    }
+
+    private void trimPackets() {
+        while (packets.size() > 30) {
+            String oldest = packets.keySet().iterator().next();
+            packets.remove(oldest);
+        }
+    }
+
+    private void renderPackets() {
+        if (packets.isEmpty()) {
+            packetFeed.setText("No messages yet.\nSent and received packets will appear here.");
+            return;
+        }
+        StringBuilder out = new StringBuilder();
+        List<PacketView> list = new ArrayList<>(packets.values());
+        for (int i = list.size() - 1; i >= 0; i--) {
+            PacketView p = list.get(i);
+            out.append("\n━━ ").append(p.direction).append("  ")
+                    .append(clock.format(new Date(p.timeMs))).append(" ━━\n")
+                    .append("Message: ").append(p.text).append('\n')
+                    .append("Status: ").append(p.status == null ? "RECEIVED" : p.status).append('\n')
+                    .append("Packet ID: ").append(p.id).append('\n')
+                    .append("From: ").append(p.origin).append('\n')
+                    .append("To: ").append(MeshEvent.BROADCAST.equals(p.recipient) ? "ALL PHONES (*)" : p.recipient).append('\n')
+                    .append("Last hop / via: ").append(p.via).append('\n')
+                    .append("Hops remaining: ").append(p.hops).append('\n');
+        }
+        packetFeed.setText(out.toString());
     }
     private EditText input(String hint) { EditText e = new EditText(this); e.setSingleLine(true); e.setHint(hint); return e; }
     private Button button(String title) { Button b = new Button(this); b.setText(title); return b; }

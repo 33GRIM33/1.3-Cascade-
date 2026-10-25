@@ -14,9 +14,9 @@ foreach ($permission in $required) {
 }
 $badging = & $aapt dump badging $apk
 if ($LASTEXITCODE -ne 0) { throw 'Could not inspect APK version' }
-if (-not ($badging -match "versionCode='3' versionName='0.3'")) { throw 'This is not the audited 0.3 APK' }
+if (-not ($badging -match "versionCode='4' versionName='0.4'")) { throw 'This is not the audited 0.4 APK' }
 if (-not ($badging -match "launchable-activity: name='org.ghostnet.mesh.DebugActivity'")) { throw 'Launcher activity missing' }
 $signer = Join-Path $SdkRoot 'build-tools/35.0.0/apksigner.bat'
 & $signer verify $apk
 if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed' }
-Write-Output 'APK checks passed: version 0.3, launcher, signature and all required permissions without modern-Android caps.'
+Write-Output 'APK checks passed: version 0.4, launcher, signature and all required permissions without modern-Android caps.'
