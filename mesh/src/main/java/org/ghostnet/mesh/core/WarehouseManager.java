@@ -1,6 +1,7 @@
 package org.ghostnet.mesh.core;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Manages disaster supply warehouses, stock levels, and multi-depot routing.
@@ -10,9 +11,43 @@ import java.util.*;
 public final class WarehouseManager {
 
     private final Map<String, Warehouse> warehouses = new LinkedHashMap<>();
+    private StreetMap streetMap;
+    private Supplier<Collection<HazardReport>> hazardSource = Collections::emptyList;
 
     public WarehouseManager() {
         seedDefaultWarehouses();
+    }
+
+    private WarehouseManager(boolean empty) { }
+
+    /** Exactly two fictional depots, placed reproducibly so all offline peers agree. */
+    public static WarehouseManager demo(StreetMap map) {
+        WarehouseManager manager = new WarehouseManager(true);
+        List<StreetMap.Node> choices = new ArrayList<>();
+        for (StreetMap.Edge e : map.edges.values()) {
+            if (!e.name.equals("Walkway") && e.a.lat > 37.773 && e.a.lat < 37.780
+                    && e.a.lon > -122.426 && e.a.lon < -122.414) choices.add(e.a);
+        }
+        if (choices.isEmpty()) choices.addAll(map.nodes.values());
+        choices.sort(Comparator.comparing(n -> n.id));
+        Random random = new Random(6602);
+        StreetMap.Node first = choices.get(random.nextInt(choices.size()));
+        StreetMap.Node second = first;
+        for (int i = 0; i < choices.size(); i++) {
+            second = choices.get(random.nextInt(choices.size()));
+            if (StreetMap.distance(first.lat, first.lon, second.lat, second.lon) > 280) break;
+        }
+        Map<String, Integer> med = new LinkedHashMap<>();
+        med.put("insulin", 4); med.put("medical", 6); med.put("water", 12); med.put("shelter", 3);
+        Map<String, Integer> rescue = new LinkedHashMap<>();
+        rescue.put("boat", 1); rescue.put("life_jacket", 4); rescue.put("water", 8); rescue.put("power", 2);
+        manager.registerWarehouse(new Warehouse("DEMO-MEDICAL", "Civic Medical Depot", first.lat, first.lon, med));
+        manager.registerWarehouse(new Warehouse("DEMO-RELIEF", "Neighborhood Relief Depot", second.lat, second.lon, rescue));
+        return manager;
+    }
+
+    public void configureRouting(StreetMap graph, Supplier<Collection<HazardReport>> hazards) {
+        streetMap = graph; hazardSource = hazards;
     }
 
     private void seedDefaultWarehouses() {
@@ -116,6 +151,8 @@ public final class WarehouseManager {
         public final List<String> unfulfilledItems = new ArrayList<>();
         public double totalDistanceMeters = 0.0;
         public String summaryText = "";
+        public boolean reachable = true;
+        public final List<StreetMap.Edge> streetEdges = new ArrayList<>();
 
         public static final class RouteStop {
             public final String label;
@@ -159,6 +196,7 @@ public final class WarehouseManager {
      */
     public RoutePlan planRoute(List<String> neededItems, double responderLat, double responderLon,
                                double victimLat, double victimLon) {
+        if (streetMap != null) return planStreetRoute(neededItems, responderLat, responderLon, victimLat, victimLon);
         RoutePlan plan = new RoutePlan();
         if (neededItems == null || neededItems.isEmpty()) {
             // Direct route: responder to victim
@@ -251,12 +289,58 @@ public final class WarehouseManager {
         return plan;
     }
 
+    private RoutePlan planStreetRoute(List<String> neededItems, double lat, double lon, double endLat, double endLon) {
+        RoutePlan plan = new RoutePlan();
+        plan.stops.add(new RoutePlan.RouteStop("Responder", lat, lon));
+        Set<String> remaining = new LinkedHashSet<>();
+        if (neededItems != null) for (String item : neededItems) remaining.add(normalizeItem(item));
+        Collection<HazardReport> hazards = hazardSource.get();
+        long now = System.currentTimeMillis();
+        HazardRouter router = new HazardRouter(streetMap);
+        Set<String> visited = new HashSet<>();
+        while (!remaining.isEmpty()) {
+            Warehouse best = null; HazardRouter.Route bestRoute = null;
+            for (Warehouse warehouse : warehouses.values()) {
+                if (visited.contains(warehouse.id) || remaining.stream().noneMatch(warehouse::hasStock)) continue;
+                HazardRouter.Route route = router.route(lat, lon, warehouse.latitude, warehouse.longitude, hazards, now);
+                HazardRouter.Route exit = router.route(warehouse.latitude, warehouse.longitude, endLat, endLon, hazards, now);
+                if (route.reachable && exit.reachable && (bestRoute == null || route.meters < bestRoute.meters)) {
+                    best = warehouse; bestRoute = route;
+                }
+            }
+            if (best == null) break;
+            visited.add(best.id);
+            RoutePlan.RouteStop stop = new RoutePlan.RouteStop(best.name, best.latitude, best.longitude);
+            stop.distanceFromPrevMeters = bestRoute.meters;
+            for (String item : new ArrayList<>(remaining)) if (best.hasStock(item)) {
+                stop.collectItems.add(item + " (" + best.getStock(item) + " available)");
+                remaining.remove(item); plan.fulfilledItems.add(item);
+            }
+            plan.stops.add(stop); plan.streetEdges.addAll(bestRoute.edges);
+            plan.totalDistanceMeters += bestRoute.meters; lat = best.latitude; lon = best.longitude;
+        }
+        plan.unfulfilledItems.addAll(remaining);
+        HazardRouter.Route last = router.route(lat, lon, endLat, endLon, hazards, now);
+        if (!last.reachable) {
+            plan.reachable = false; plan.streetEdges.clear(); plan.totalDistanceMeters = 0;
+            plan.summaryText = "NO ROUTE: " + last.reason; return plan;
+        }
+        plan.streetEdges.addAll(last.edges); plan.totalDistanceMeters += last.meters;
+        RoutePlan.RouteStop end = new RoutePlan.RouteStop("Incident", endLat, endLon);
+        end.distanceFromPrevMeters = last.meters; plan.stops.add(end);
+        plan.summaryText = (plan.stops.size() > 2 ? "Route via " + (plan.stops.size() - 2) + " supply depot(s)" : "Walking route")
+                + " · " + formatDist(plan.totalDistanceMeters) + " · known closures avoided";
+        if (!remaining.isEmpty()) plan.summaryText += " · supplies unavailable: " + String.join(", ", remaining);
+        return plan;
+    }
+
     private static String normalizeItem(String item) {
         if (item == null) return "";
         String s = item.toLowerCase(Locale.US).trim();
         if (s.contains("insulin")) return "insulin";
         if (s.contains("boat") || s.contains("raft")) return "boat";
         if (s.contains("water") || s.contains("drink")) return "water";
+        if (s.equals("rescue")) return "boat";
         if (s.contains("first aid") || s.contains("medic")) return "medical";
         if (s.contains("generator") || s.contains("power")) return "power";
         if (s.contains("blanket") || s.contains("tent") || s.contains("shelter")) return "shelter";

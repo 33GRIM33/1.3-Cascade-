@@ -23,8 +23,12 @@ if (-not $javacCmd) {
 
 $sources = @(Get-ChildItem (Join-Path $projectRoot 'mesh/src/main/java/org/ghostnet/mesh/core') -Filter '*.java' | ForEach-Object FullName)
 $sources += Join-Path $projectRoot 'app/src/testCore/java/org/ghostnet/mesh/core/RouterChecks.java'
+$sources += Join-Path $projectRoot 'app/src/testCore/java/org/ghostnet/mesh/core/HazardRoutingChecks.java'
 & javac -d $classes $sources
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & java -cp $classes org.ghostnet.mesh.core.RouterChecks
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Push-Location $projectRoot
+try { & java -cp $classes org.ghostnet.mesh.core.HazardRoutingChecks } finally { Pop-Location }
 exit $LASTEXITCODE
 

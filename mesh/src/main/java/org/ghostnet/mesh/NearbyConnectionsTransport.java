@@ -14,14 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** All radio operations and callback bookkeeping run on the main looper. */
 public final class NearbyConnectionsTransport implements MeshTransport {
-    public interface ConnectionApproval {
-        void confirm(String peerId, String authenticationDigits, Runnable accept, Runnable reject);
-    }
     private static final String SERVICE_ID = "org.ghostnet.mesh";
     private final Context context;
     private final ConnectionsClient client;
     private final Handler main = new Handler(Looper.getMainLooper());
-    private final ConnectionApproval approval;
     private final Map<String, String> endpointToNode = new HashMap<>();
     private final Map<String, String> nodeToEndpoint = new ConcurrentHashMap<>();
     private final Map<String, String> discovered = new HashMap<>();
@@ -35,10 +31,9 @@ public final class NearbyConnectionsTransport implements MeshTransport {
     private volatile boolean requested;
     private int generation;
 
-    public NearbyConnectionsTransport(Context context, ConnectionApproval approval) {
+    public NearbyConnectionsTransport(Context context) {
         this.context = context.getApplicationContext();
         this.client = Nearby.getConnectionsClient(this.context);
-        this.approval = approval;
     }
     public void setBlockedPeerId(String nodeId) {
         if (active) throw new IllegalStateException("Stop before changing the blocked peer");
@@ -132,16 +127,16 @@ public final class NearbyConnectionsTransport implements MeshTransport {
                     || nodeToEndpoint.containsKey(peer)) { client.rejectConnection(endpoint); return; }
             int session = generation;
             endpointToNode.put(endpoint, peer); connecting.put(endpoint, SystemClock.elapsedRealtime());
-            approval.confirm(peer, info.getAuthenticationDigits(), () -> main.post(() -> {
-                if (!current(session) || !connecting.containsKey(endpoint)) return;
-                client.acceptConnection(endpoint, payloads).addOnFailureListener(e -> {
-                    if (!current(session)) return;
-                    connecting.remove(endpoint); listener.onError("Accept: " + e.getMessage());
-                });
-            }), () -> main.post(() -> {
+            // Crisis mesh mode: valid GHOSTNET nodes are accepted automatically. The router's
+            // deduplication, expiry, hop limit and ACK rules operate after this radio link forms.
+            // Production deployments should authenticate signed envelopes at the application layer.
+            client.acceptConnection(endpoint, payloads).addOnSuccessListener(ignored -> {
+                if (current(session)) listener.onInfo("Auto-accepted peer " + peer);
+            }).addOnFailureListener(e -> {
                 if (!current(session)) return;
-                rejected.add(endpoint); connecting.remove(endpoint); client.rejectConnection(endpoint);
-            }));
+                connecting.remove(endpoint); endpointToNode.remove(endpoint);
+                listener.onError("Auto-accept: " + e.getMessage());
+            });
         }
         @Override public void onConnectionResult(String endpoint, ConnectionResolution result) {
             if (!active) return;

@@ -14,6 +14,9 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.WindowManager;
+import android.view.View;
+import android.view.Gravity;
+import android.graphics.Typeface;
 import android.widget.*;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -46,9 +49,9 @@ public final class DebugActivity extends Activity {
     private Button start, publish;
     private String nodeId;
     private String currentRole = "NORMAL_USER";
-    private final DispatchEngine dispatchEngine = new DispatchEngine();
+    private DispatchEngine dispatchEngine;
+    private MapController mapController;
     private final Handler main = new Handler(Looper.getMainLooper());
-    private final List<AlertDialog> confirmations = new ArrayList<>();
     private final LinkedHashMap<String, PacketView> packets = new LinkedHashMap<>();
     private final SimpleDateFormat clock = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
@@ -73,55 +76,88 @@ public final class DebugActivity extends Activity {
             nodeId = UUID.randomUUID().toString();
             getPreferences(MODE_PRIVATE).edit().putString("nodeId", nodeId).apply();
         }
+        try {
+            mapController = new MapController(this, nodeId, () -> module, this::append);
+            dispatchEngine = new DispatchEngine(mapController.warehouses);
+        } catch (Exception ex) {
+            TextView error = new TextView(this);
+            error.setText("Could not load bundled offline map: " + ex.getMessage());
+            setContentView(error); return;
+        }
         LinearLayout column = new LinearLayout(this);
         column.setOrientation(LinearLayout.VERTICAL);
+        column.setBackgroundColor(0xFF101923);
         int pad = (int) (12 * getResources().getDisplayMetrics().density);
-        column.setPadding(pad, pad, pad, pad);
+        column.setPadding(0, pad, 0, pad);
         column.setOnApplyWindowInsetsListener((view, insets) -> {
-            view.setPadding(pad + insets.getSystemWindowInsetLeft(), pad + insets.getSystemWindowInsetTop(),
-                    pad + insets.getSystemWindowInsetRight(), pad + insets.getSystemWindowInsetBottom());
+            view.setPadding(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
+                    insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
             return insets;
         });
+        LinearLayout top = new LinearLayout(this); top.setGravity(Gravity.CENTER_VERTICAL);
+        TextView brand = new TextView(this); brand.setText("GHOSTNET  /  CASCADE\nOFFLINE RESPONSE · BUILD 0.6");
+        brand.setTextColor(0xFFE9F1F7); brand.setTextSize(15); brand.setTypeface(null, Typeface.BOLD);
+        brand.setPadding(pad, pad / 2, pad, pad / 2);
+        top.addView(brand, new LinearLayout.LayoutParams(0, -2, 1));
+        start = button("Start mesh"); start.setTextSize(11); top.addView(start); column.addView(top);
+        status = new TextView(this); status.setText("Mesh stopped · map works offline");
+        status.setTextSize(11); status.setTextColor(0xFF93A9BA); status.setPadding(pad, 0, pad, pad / 2); column.addView(status);
+        FrameLayout pages = new FrameLayout(this);
+        View mapPage = mapController.createView();
+        LinearLayout messageColumn = new LinearLayout(this); messageColumn.setOrientation(LinearLayout.VERTICAL);
+        messageColumn.setPadding(pad, pad, pad, pad);
+        ScrollView messagePage = new ScrollView(this); messagePage.addView(messageColumn); messagePage.setVisibility(View.GONE);
+        LinearLayout networkColumn = new LinearLayout(this); networkColumn.setOrientation(LinearLayout.VERTICAL);
+        networkColumn.setPadding(pad, pad, pad, pad);
+        ScrollView networkPage = new ScrollView(this); networkPage.addView(networkColumn); networkPage.setVisibility(View.GONE);
+        LinearLayout tabs = new LinearLayout(this);
+        String[] names = {"Map", "Messages", "Network"}; View[] surfaces = {mapPage, messagePage, networkPage};
+        for (int i = 0; i < names.length; i++) {
+            final int index = i; Button tab = button(names[i]); tab.setTextSize(12);
+            tabs.addView(tab, new LinearLayout.LayoutParams(0, -2, 1));
+            tab.setOnClickListener(v -> { for (int j = 0; j < surfaces.length; j++) surfaces[j].setVisibility(j == index ? View.VISIBLE : View.GONE); });
+        }
+        column.addView(tabs); pages.addView(mapPage); pages.addView(messagePage); pages.addView(networkPage);
+        column.addView(pages, new LinearLayout.LayoutParams(-1, 0, 1));
         TextView own = new TextView(this);
-        own.setText("GHOSTNET • Build 0.4\nNode ID:\n" + nodeId);
-        own.setTextIsSelectable(true); column.addView(own);
-        Button copy = button("Copy my node ID"); column.addView(copy);
+        own.setText("GHOSTNET • Build 0.6\nNode ID:\n" + nodeId); own.setTextColor(0xFFE9F1F7);
+        own.setTextIsSelectable(true); networkColumn.addView(own);
+        Button copy = button("Copy my node ID"); networkColumn.addView(copy);
         copy.setOnClickListener(v -> {
             ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("Node ID", nodeId));
             Toast.makeText(this, "Node ID copied", Toast.LENGTH_SHORT).show();
         });
         TextView help = new TextView(this);
-        help.setText("Enable Bluetooth, Wi-Fi and Location. Tap Start, allow Nearby devices and precise Location while using the app. Internet is not needed.");
-        column.addView(help);
+        help.setText("Enable Bluetooth, Wi-Fi and Location. Tap Start once; nearby GHOSTNET phones connect automatically. Internet is not needed.");
+        help.setTextColor(0xFFAAC0CF); networkColumn.addView(help);
 
         currentRole = getPreferences(MODE_PRIVATE).getString("role", "NORMAL_USER");
         TextView roleTitle = new TextView(this);
         roleTitle.setText("Participant Role:");
-        column.addView(roleTitle);
+        roleTitle.setTextColor(0xFFE9F1F7); networkColumn.addView(roleTitle);
         RadioGroup roleGroup = new RadioGroup(this);
         roleGroup.setOrientation(LinearLayout.HORIZONTAL);
         RadioButton rbCitizen = new RadioButton(this);
+        rbCitizen.setId(View.generateViewId()); rbCitizen.setTextColor(0xFFE9F1F7);
         rbCitizen.setText("Citizen (Victim) ");
         RadioButton rbResponder = new RadioButton(this);
+        rbResponder.setId(View.generateViewId()); rbResponder.setTextColor(0xFFE9F1F7);
         rbResponder.setText("First Responder");
-        if ("FIRST_RESPONDER".equals(currentRole)) rbResponder.setChecked(true);
-        else rbCitizen.setChecked(true);
         roleGroup.addView(rbCitizen);
         roleGroup.addView(rbResponder);
+        roleGroup.check("FIRST_RESPONDER".equals(currentRole) ? rbResponder.getId() : rbCitizen.getId());
         roleGroup.setOnCheckedChangeListener((group, id) -> {
             currentRole = id == rbResponder.getId() ? "FIRST_RESPONDER" : "NORMAL_USER";
             getPreferences(MODE_PRIVATE).edit().putString("role", currentRole).apply();
             Toast.makeText(this, "Active Mode: " + (currentRole.equals("FIRST_RESPONDER") ? "First Responder" : "Citizen / Victim"), Toast.LENGTH_SHORT).show();
         });
-        column.addView(roleGroup);
+        networkColumn.addView(roleGroup);
 
         blocked = input("Optional: blocked direct peer ID (A↔C test)");
-        blocked.setText(getPreferences(MODE_PRIVATE).getString("blocked", "")); column.addView(blocked);
-        start = button("Start"); column.addView(start);
-        status = new TextView(this); status.setText("Stopped — tap Start to check setup"); column.addView(status);
-        peerText = new TextView(this); peerText.setText("Direct peers: []"); column.addView(peerText);
+        blocked.setText(getPreferences(MODE_PRIVATE).getString("blocked", "")); networkColumn.addView(blocked);
+        peerText = new TextView(this); peerText.setText("Direct peers: []"); peerText.setTextColor(0xFFAAC0CF); networkColumn.addView(peerText);
         recipient = input("Recipient node ID, or * for broadcast");
-        recipient.setText(getPreferences(MODE_PRIVATE).getString("recipient", "")); column.addView(recipient);
+        recipient.setText(getPreferences(MODE_PRIVATE).getString("recipient", "*")); messageColumn.addView(recipient);
 
         LinearLayout msgRow = new LinearLayout(this);
         msgRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -130,23 +166,22 @@ public final class DebugActivity extends Activity {
         Button voiceBtn = button("🎙️ Voice");
         voiceBtn.setOnClickListener(v -> startVoiceRecognition());
         msgRow.addView(voiceBtn);
-        column.addView(msgRow);
+        messageColumn.addView(msgRow);
 
-        publish = button("Publish DISTRESS"); publish.setEnabled(false); column.addView(publish);
+        publish = button("Publish DISTRESS"); publish.setEnabled(false); messageColumn.addView(publish);
 
         TextView packetTitle = new TextView(this);
         packetTitle.setText("\nMESSAGE PACKETS");
-        packetTitle.setTextSize(18); column.addView(packetTitle);
+        packetTitle.setTextSize(18); packetTitle.setTextColor(0xFFE9F1F7); messageColumn.addView(packetTitle);
         packetFeed = new TextView(this);
         packetFeed.setText("No messages yet.\nSent and received packets will appear here.");
-        packetFeed.setTextIsSelectable(true); column.addView(packetFeed);
+        packetFeed.setTextIsSelectable(true); packetFeed.setTextColor(0xFFBFD2E1); messageColumn.addView(packetFeed);
 
         TextView logTitle = new TextView(this);
         logTitle.setText("\nTECHNICAL LOG");
-        logTitle.setTextSize(14); column.addView(logTitle);
-        log = new TextView(this); log.setTextIsSelectable(true);
-        ScrollView scroll = new ScrollView(this); scroll.addView(log);
-        column.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
+        logTitle.setTextSize(14); logTitle.setTextColor(0xFFE9F1F7); networkColumn.addView(logTitle);
+        log = new TextView(this); log.setTextIsSelectable(true); log.setTextColor(0xFF93A9BA); log.setTextSize(11);
+        networkColumn.addView(log);
         setContentView(column);
         start.setOnClickListener(v -> { if (module == null) ensurePermissionsThenStart(); else stopModule("Stopped"); });
         publish.setOnClickListener(v -> publish());
@@ -165,14 +200,15 @@ public final class DebugActivity extends Activity {
         
         // Offline CASCADE AI extraction with role & battery constraint
         int battery = getBatteryPercentage();
-        CascadeEmergency emergency = CascadeExtractor.extract(body, currentRole, battery, 37.7750, -122.4183, false);
+        CascadeEmergency emergency = CascadeExtractor.extract(body, currentRole, battery, mapController.incidentLat(), mapController.incidentLon(), false);
         byte[] bytes = emergency.toJsonBytes();
         if (bytes.length > 1800) { message.setError("Message payload exceeds wire limit"); return; }
         getPreferences(MODE_PRIVATE).edit().putString("recipient", to).apply();
         String id = module.publish(to, MeshEvent.Type.DISTRESS, bytes, 300000, 4, 10);
         PacketView packet = new PacketView();
         packet.id = id; packet.direction = "SENT";
-        DispatchEngine.EvaluationResult localEval = dispatchEngine.evaluate(emergency, nodeId, 4, 37.7749, -122.4194);
+        DispatchEngine.EvaluationResult localEval = dispatchEngine.evaluate(emergency, nodeId, 4, MapController.RESPONDER_LAT, MapController.RESPONDER_LON);
+        mapController.showIncident(emergency);
         packet.text = formatEmergencySummary(emergency, localEval);
         packet.origin = nodeId; packet.via = nodeId; packet.recipient = to;
         packet.hops = 4; packet.status = "QUEUED"; packet.timeMs = System.currentTimeMillis();
@@ -223,21 +259,16 @@ public final class DebugActivity extends Activity {
     private void startModule() {
         if (module != null) return;
         try {
-            NearbyConnectionsTransport transport = new NearbyConnectionsTransport(this, (peer, digits, accept, reject) ->
-                    runOnUiThread(() -> {
-                        if (isDestroyed() || module == null) { reject.run(); return; }
-                        AlertDialog dialog = new AlertDialog.Builder(this).setTitle("Connect to " + peer)
-                                .setMessage("Compare this code on both phones: " + digits)
-                                .setPositiveButton("Codes match", (d, w) -> accept.run())
-                                .setNegativeButton("Reject", (d, w) -> reject.run()).setCancelable(false).create();
-                        confirmations.add(dialog); dialog.setOnDismissListener(d -> confirmations.remove(dialog)); dialog.show();
-                    }));
+            NearbyConnectionsTransport transport = new NearbyConnectionsTransport(this);
             String block = blocked.getText().toString().trim();
             transport.setBlockedPeerId(block.isEmpty() ? null : block);
             getPreferences(MODE_PRIVATE).edit().putString("blocked", block).apply();
             MeshModule current = new MeshModule(nodeId, transport, new File(getFilesDir(), "mesh-state.bin"));
             module = current; blocked.setEnabled(false);
             current.onLog(this::append);
+            current.onPeerConnected(peer -> runOnUiThread(() -> {
+                if (module == current && !isDestroyed()) mapController.sync(peer);
+            }));
             current.onEvent(e -> {
                 runOnUiThread(() -> recordEvent(e));
                 append("RECEIVED id=" + e.id + " from=" + e.originId + " via=" + e.senderId + " hops=" + e.hopLimit);
@@ -248,8 +279,9 @@ public final class DebugActivity extends Activity {
             });
             current.onReady(() -> runOnUiThread(() -> {
                 if (module != current || isDestroyed()) return;
-                status.setText("Ready — searching for phones; compare connection codes when prompted");
+                status.setText("Ready — phones connect automatically; no code confirmation needed");
                 start.setText("Stop"); start.setEnabled(true); publish.setEnabled(true);
+                mapController.sync(MeshEvent.BROADCAST);
             }));
             current.onStartFailure(reason -> runOnUiThread(() -> {
                 if (module == current && !isDestroyed()) stopModule("Could not start:\n" + reason);
@@ -266,7 +298,6 @@ public final class DebugActivity extends Activity {
         MeshModule current = module;
         if (current == null) return;
         start.setEnabled(false); publish.setEnabled(false); status.setText(reason);
-        for (AlertDialog dialog : new ArrayList<>(confirmations)) dialog.dismiss();
         current.stopAsync().thenRun(() -> runOnUiThread(() -> {
             if (isDestroyed() || module != current) return;
             module = null; start.setText("Start"); start.setEnabled(true); blocked.setEnabled(true);
@@ -283,6 +314,8 @@ public final class DebugActivity extends Activity {
     }
 
     private void recordEvent(MeshEvent event) {
+        if (isDestroyed()) return;
+        if (mapController.receive(event)) return;
         PacketView packet = packets.get(event.id);
         if (packet == null) {
             packet = new PacketView();
@@ -291,8 +324,9 @@ public final class DebugActivity extends Activity {
             CascadeEmergency emergency = CascadeEmergency.fromJsonBytes(event.payload);
             if (emergency != null) {
                 DispatchEngine.EvaluationResult eval = dispatchEngine.evaluate(
-                        emergency, event.originId, event.hopLimit, 37.7749, -122.4194
+                        emergency, event.originId, event.hopLimit, MapController.RESPONDER_LAT, MapController.RESPONDER_LON
                 );
+                mapController.showIncident(emergency);
                 packet.text = formatEmergencySummary(emergency, eval);
                 if ("FIRST_RESPONDER".equals(currentRole) && event.type == MeshEvent.Type.DISTRESS) {
                     triggerEmergencyAudioAlarm();
@@ -326,9 +360,9 @@ public final class DebugActivity extends Activity {
 
         if (eval != null) {
             sb.append("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-            sb.append("⚡ PROBABILISTIC DISPATCH:\n");
+            sb.append("ROUTE & SUPPLY REVIEW:\n");
             sb.append("• Trust: ").append(Math.round(eval.trustScore * 100)).append("% | Decision: ")
-                    .append(eval.approvedForDispatch ? "APPROVED" : "HELD").append("\n");
+                    .append(eval.approvedForDispatch ? "SUGGESTED" : "HELD").append("\n");
             sb.append("• Plan: ").append(eval.justification);
             if (eval.routePlan != null && eval.routePlan.stops.size() > 2) {
                 sb.append("\n• Nearest Supply Depots:\n");
@@ -433,11 +467,18 @@ public final class DebugActivity extends Activity {
         }
         packetFeed.setText(out.toString());
     }
-    private EditText input(String hint) { EditText e = new EditText(this); e.setSingleLine(true); e.setHint(hint); return e; }
-    private Button button(String title) { Button b = new Button(this); b.setText(title); return b; }
+    private EditText input(String hint) {
+        EditText e = new EditText(this); e.setSingleLine(true); e.setHint(hint); e.setTextColor(0xFFE0EAF5);
+        e.setHintTextColor(0xFF819BAE); e.setTextSize(14);
+        e.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFF52738B)); return e;
+    }
+    private Button button(String title) {
+        Button b = new Button(this); b.setText(title); b.setAllCaps(false); b.setTextColor(0xFFE0EAF5);
+        b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFF22384B)); return b;
+    }
     @Override protected void onDestroy() {
         main.removeCallbacksAndMessages(null);
-        for (AlertDialog dialog : new ArrayList<>(confirmations)) dialog.dismiss();
+        if (mapController != null) mapController.destroy();
         if (module != null) module.stop();
         super.onDestroy();
     }

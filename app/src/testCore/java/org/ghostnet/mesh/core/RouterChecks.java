@@ -172,6 +172,7 @@ public final class RouterChecks {
         check(producers.awaitTermination(10, TimeUnit.SECONDS), "concurrent producers completed");
         check(received.await(10, TimeUnit.SECONDS), "concurrent events delivered");
         concurrentModule.stopAsync().get(10, TimeUnit.SECONDS);
+        check(deliveredIds.size() == count && new HashSet<>(deliveredIds).size() == count, "concurrent duplicate suppression");
         concurrentTransport.listener.onPeerDisconnected(remote); // late callbacks must not crash after shutdown
         check(new MessageStore(new File(directory, "concurrent"), new MessageCodec()).seen.keySet().containsAll(deliveredIds), "concurrent state survived restart");
 
@@ -243,6 +244,27 @@ public final class RouterChecks {
         check(roundTrip != null && Integer.valueOf(12).equals(roundTrip.batteryPct), "battery % preserved across wire");
         check("DISPATCHED".equals(roundTrip.dispatchStatus), "dispatch status preserved across wire");
         check(roundTrip.warehouseRouting != null, "warehouse routing preserved across wire");
+
+        // A hazard observation and its clearance must flood A -> B -> C with no A-C link.
+        Node ha = new Node(aId, now, new File(directory, "hazard-a"));
+        Node hb = new Node(bId, now, new File(directory, "hazard-b"));
+        Node hc = new Node(cId, now, new File(directory, "hazard-c"));
+        ha.transport.link(hb.transport); hb.transport.link(hc.transport);
+        StreetMap roads = new StreetMap(); roads.id = "relay-map";
+        roads.addNode("1", 37, -122); roads.addNode("2", 37, -121.998);
+        roads.addEdge("road-1", "1", "2", "Main Street", "residential");
+        HazardReport fire = HazardReport.create(aId, roads, roads.edges.get("road-1"), HazardReport.Type.FIRE, "reported flames", now[0]);
+        ha.router.publish(MeshEvent.create(aId, "*", MeshEvent.Type.OBSERVATION, fire.encode(), now[0], 300000, 8, 9));
+        check(hb.received.size() == 1 && hc.received.size() == 1, "hazard broadcast floods through relay");
+        check(hc.received.get(0).senderId.equals(bId), "C gets hazard via B, not A");
+        HazardLedger remoteHazards = new HazardLedger();
+        remoteHazards.apply(HazardReport.decode(hc.received.get(0).payload), now[0]);
+        check(new HazardRouter(roads).blockedEdges(remoteHazards.active(now[0]), now[0]).contains("road-1"), "remote map closes reported road");
+        ha.router.publish(MeshEvent.create(aId, "*", MeshEvent.Type.OBSERVATION, fire.clear(now[0] + 1).encode(), now[0], 300000, 8, 9));
+        check(hc.received.size() == 2, "clearance floods to C");
+        remoteHazards.apply(HazardReport.decode(hc.received.get(1).payload), now[0] + 1);
+        check(remoteHazards.active(now[0] + 1).isEmpty(), "remote map reopens after clearance");
+        System.out.println("Three-phone simulated hazard broadcast and clearance passed (A -> B -> C).");
 
         System.out.println("RouterChecks passed (including CASCADE offline AI extraction, roles, warehouses & probabilistic dispatch)");
     }

@@ -1,0 +1,13 @@
+Street graph, street names and area geometry in sf-civic.tsv:
+Map data from OpenStreetMap contributors, available under the Open Database License (ODbL) 1.0.
+https://www.openstreetmap.org/copyright
+https://opendatacommons.org/licenses/odbl/1-0/
+
+Source: https://www.openstreetmap.org/api/0.6/map?bbox=-122.429,37.770,-122.409,37.783
+Snapshot retrieved 2026-10-26. Refresh using scripts/build-offline-map.ps1.
+This downloadable TSV is the redistributed map database; Android styling is original.
+Bidirectional links are used for walking, not driving navigation. Restricted-access ways and
+ways with foot=no are excluded at export. Surface, stairs and turn-by-turn safety are not assessed.
+
+Warehouses, their inventories, the initial responder/incident positions, and community hazard
+reports are separate application/demo data. They are not verified OSM relief facilities.

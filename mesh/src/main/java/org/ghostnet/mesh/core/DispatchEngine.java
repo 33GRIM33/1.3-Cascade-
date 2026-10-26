@@ -116,10 +116,14 @@ public final class DispatchEngine {
                 neededSupplies, responderLat, responderLon, victimLat, victimLon
         );
 
-        boolean approved = claimVerified && trustScore >= 0.50;
+        hazardSafe = hazardSafe && routePlan.reachable;
+        boolean approved = claimVerified && trustScore >= 0.50 && hazardSafe && routePlan.unfulfilledItems.isEmpty();
 
         // Build human-in-the-loop one-line plain language justification
         String justification = generateJustification(emergency, approved, trustScore, requiredEquip, routePlan);
+        if (!routePlan.reachable) justification = routePlan.summaryText;
+        else if (!hazardSafe) justification = "Held: reported electrical danger requires specialist review. " + routePlan.summaryText;
+        else if (!routePlan.unfulfilledItems.isEmpty()) justification = "Held: required supplies unavailable. " + routePlan.summaryText;
 
         return new EvaluationResult(claimVerified, hazardSafe, trustScore, urgencyCost, approved, justification, routePlan, requiredEquip);
     }
@@ -148,8 +152,8 @@ public final class DispatchEngine {
             equip.add("boat");
             equip.add("life_jacket");
         }
-        if (emergency.needs.contains("medical") || emergency.rawText.toLowerCase(Locale.US).contains("insulin")) {
-            equip.add("insulin");
+        if (emergency.rawText.toLowerCase(Locale.US).contains("insulin")) equip.add("insulin");
+        if (emergency.needs.contains("medical")) {
             equip.add("medical");
         }
         if (emergency.needs.contains("food_water") || emergency.rawText.toLowerCase(Locale.US).contains("water")) {
@@ -208,7 +212,7 @@ public final class DispatchEngine {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Dispatched: ");
+        sb.append("Suggested assistance: ");
         if ("critical".equalsIgnoreCase(emergency.urgency)) {
             sb.append("CRITICAL rescue (");
         } else {

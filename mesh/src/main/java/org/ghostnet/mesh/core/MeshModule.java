@@ -23,6 +23,7 @@ public final class MeshModule {
     private final CopyOnWriteArrayList<Consumer<MeshEvent>> events = new CopyOnWriteArrayList<>();
     private final CopyOnWriteArrayList<BiConsumer<String, DeliveryStatus>> statuses = new CopyOnWriteArrayList<>();
     private final CopyOnWriteArrayList<Consumer<String>> logs = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<Consumer<String>> peersConnected = new CopyOnWriteArrayList<>();
     private Runnable ready = () -> {};
     private Consumer<String> startFailure = reason -> {};
     private boolean started, stopped;
@@ -43,6 +44,7 @@ public final class MeshModule {
     public void onEvent(Consumer<MeshEvent> callback) { events.add(callback); }
     public void onStatus(BiConsumer<String, DeliveryStatus> callback) { statuses.add(callback); }
     public void onLog(Consumer<String> callback) { logs.add(callback); }
+    public void onPeerConnected(Consumer<String> callback) { peersConnected.add(callback); }
     public void onReady(Runnable callback) { ready = callback; }
     public void onStartFailure(Consumer<String> callback) { startFailure = callback; }
 
@@ -51,7 +53,9 @@ public final class MeshModule {
         if (started) return;
         started = true;
         transport.start(nodeId, new MeshTransport.Listener() {
-            public void onPeerConnected(String peer) { submit(() -> { log("connected " + peer); router.peerConnected(peer); }); }
+            public void onPeerConnected(String peer) { submit(() -> {
+                log("connected " + peer); router.peerConnected(peer); peersConnected.forEach(c -> c.accept(peer));
+            }); }
             public void onPeerDisconnected(String peer) { submit(() -> log("disconnected " + peer)); }
             public void onBytes(String peer, byte[] bytes) { submit(() -> router.receive(peer, bytes)); }
             public void onError(String description) { submit(() -> log("transport: " + description)); }

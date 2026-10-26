@@ -31,6 +31,7 @@ captures/
 .DS_Store
 Thumbs.db
 .core-classes/
+.android-test/
 dist/
 mesh-state.bin
 

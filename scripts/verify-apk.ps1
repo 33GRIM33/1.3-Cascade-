@@ -15,9 +15,12 @@ foreach ($permission in $required) {
 }
 $badging = & $aapt dump badging $apk
 if ($LASTEXITCODE -ne 0) { throw 'Could not inspect APK version' }
-if (-not ($badging -match "versionCode='4' versionName='0.4'")) { throw 'This is not the audited 0.4 APK' }
+if (-not ($badging -match "versionCode='6' versionName='0.6'")) { throw 'This is not the audited 0.6 APK' }
 if (-not ($badging -match "launchable-activity: name='org.ghostnet.mesh.DebugActivity'")) { throw 'Launcher activity missing' }
+$assets = & $aapt list $apk
+if (-not ($assets -contains 'assets/maps/sf-civic.tsv')) { throw 'Offline street graph is missing from the APK' }
+if (-not ($assets -contains 'assets/maps/LICENSE.txt')) { throw 'OSM data license is missing from the APK' }
 $signer = Join-Path $buildToolsDir 'apksigner.bat'
 & $signer verify $apk
 if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed' }
-Write-Output 'APK checks passed: version 0.4, launcher, signature and all required permissions without modern-Android caps.'
+Write-Output 'APK checks passed: version 0.6, launcher, signature and all required permissions without modern-Android caps.'
