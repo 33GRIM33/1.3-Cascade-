@@ -16,7 +16,6 @@ build/
 app/build/
 mesh/build/
 local.properties
-*.apk
 *.aab
 *.ap_
 *.dex
@@ -32,6 +31,7 @@ captures/
 Thumbs.db
 .core-classes/
 .android-test/
-dist/
+dist/*
+!dist/*.apk
 mesh-state.bin
 
